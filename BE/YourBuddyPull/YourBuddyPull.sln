@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31105.61
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{CE63592A-AD6F-4DF9-BDF5-F7215B7763CF}"
 EndProject
@@ -9,15 +9,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{6DED2D8E-3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infraestructure", "Infraestructure", "{FF79B16B-CAFA-4419-A69A-619B1A2EDEE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourBuddyPull.API", "Presentation\YourBuddyPull.API\YourBuddyPull.API.csproj", "{1758761B-7329-447A-9C2B-8A0336716E64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourBuddyPull.API", "Presentation\YourBuddyPull.API\YourBuddyPull.API.csproj", "{1758761B-7329-447A-9C2B-8A0336716E64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourBuddyPull.Domain", "Core\YourBuddyPull.Domain\YourBuddyPull.Domain.csproj", "{A265858E-679C-418B-90FA-9E1F67423432}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourBuddyPull.Domain", "Core\YourBuddyPull.Domain\YourBuddyPull.Domain.csproj", "{A265858E-679C-418B-90FA-9E1F67423432}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourBuddyPull.Application", "Core\YourBuddyPull.Application\YourBuddyPull.Application.csproj", "{0FA6123B-EA3E-4CED-B612-A7D1C83D2C43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourBuddyPull.Application", "Core\YourBuddyPull.Application\YourBuddyPull.Application.csproj", "{0FA6123B-EA3E-4CED-B612-A7D1C83D2C43}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "YourBuddyPull.SQLServerScripts", "YourBuddyPull.SQLServerScripts", "{B2134FAB-549A-4840-923E-9930162E4A1B}"
+	ProjectSection(SolutionItems) = preProject
+		dbscript.txt = dbscript.txt
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourBuddyPull.Repository.SQLServer", "Infraestructure\YourBuddyPull.Repository.SQLServer\YourBuddyPull.Repository.SQLServer.csproj", "{583538FB-2327-4A05-8AD8-EF1AA4E0EF89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YourBuddyPull.Repository.SQLServer", "Infraestructure\YourBuddyPull.Repository.SQLServer\YourBuddyPull.Repository.SQLServer.csproj", "{583538FB-2327-4A05-8AD8-EF1AA4E0EF89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

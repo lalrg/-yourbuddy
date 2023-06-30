@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using YourBuddyPull.Domain.Shared.Exceptions;
 
-namespace YourBuddyPull.Domain.Shared;
+namespace YourBuddyPull.Domain.Shared.BaseClasses;
 
 public abstract class BaseEntity
 {
@@ -11,7 +11,7 @@ public abstract class BaseEntity
         get => _id;
         protected set
         {
-            if(value == Guid.Empty)
+            if (value == Guid.Empty)
             {
                 throw new DomainValidationException("The id of an entity must be defined for it to be instanciated");
             }
@@ -23,11 +23,11 @@ public abstract class BaseEntity
     {
         if (obj == null || !(obj is not BaseEntity))
             return false;
-        if (this.GetType() != obj.GetType())
+        if (GetType() != obj.GetType())
             return false;
 
         BaseEntity item = (BaseEntity)obj;
-        return item.Id == this.Id;
+        return item.Id == Id;
     }
 
     public override int GetHashCode()
@@ -36,8 +36,8 @@ public abstract class BaseEntity
     }
     public static bool operator ==(BaseEntity left, BaseEntity right)
     {
-        if (Object.Equals(left, null))
-            return (Object.Equals(right, null));
+        if (Equals(left, null))
+            return Equals(right, null);
         else
             return left.Equals(right);
     }

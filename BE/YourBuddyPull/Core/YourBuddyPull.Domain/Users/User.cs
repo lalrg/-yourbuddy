@@ -1,6 +1,6 @@
 ﻿
 using System.Text.RegularExpressions;
-using YourBuddyPull.Domain.Shared;
+using YourBuddyPull.Domain.Shared.BaseClasses;
 using YourBuddyPull.Domain.Shared.Exceptions;
 
 namespace YourBuddyPull.Domain.Users;
@@ -124,15 +124,15 @@ public sealed class User : BaseEntity
     {
         _roles.Add(role);
     }
-    public void RemoveRole(Guid roleId)
+    public void RemoveRole(Role role)
     {
         if(_roles.Count() < 2)
         {
             throw new DomainValidationException("The user only has one role, you cannot leave a user without roles");
         }
-        var role = _roles.Single(role => role.Id == roleId) ?? 
+        var roleToRemove = _roles.Single(x => x == role) ?? 
             throw new DomainValidationException("The role that you are trying to remove is not assigned to this user");
 
-        _roles.Remove(role);
+        _roles.Remove(roleToRemove);
     }
 }

@@ -1,11 +1,12 @@
-﻿using YourBuddyPull.Domain.Shared;
+﻿using YourBuddyPull.Domain.Shared.BaseClasses;
 using YourBuddyPull.Domain.Shared.Exceptions;
+using YourBuddyPull.Domain.Shared.ValueObjects;
 
 namespace YourBuddyPull.Domain.TrainingSessions;
 
 public sealed class TrainingSession : BaseEntity
 {
-    private TrainingSession(Guid id, SessionCreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    private TrainingSession(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime)
     {
         Id = id;
         CreatedBy = createdBy;
@@ -13,12 +14,20 @@ public sealed class TrainingSession : BaseEntity
         EndTime = endTime;
     }
 
-    public static TrainingSession Create(SessionCreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    public static TrainingSession Create(CreatedBy createdBy, DateTime startTime, DateTime? endTime)
     {
         if (startTime > endTime && endTime is not null)
             throw new DomainValidationException("End time cannot happen before start time");
 
         return new TrainingSession(Guid.NewGuid(), createdBy, startTime, endTime);
+    }
+
+    public static TrainingSession Instanciate(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    {
+        if (startTime > endTime && endTime is not null)
+            throw new DomainValidationException("End time cannot happen before start time");
+
+        return new TrainingSession(id, createdBy, startTime, endTime);
     }
 
     public void UpdateProperties(DateTime startTime, DateTime? endTime)
@@ -41,7 +50,7 @@ public sealed class TrainingSession : BaseEntity
         
         _executedExercise.Remove(exercise);
     }
-    public SessionCreatedBy CreatedBy { get; private set; }
+    public CreatedBy CreatedBy { get; private set; }
     public DateTime StartTime { get; private set; }
     public DateTime? EndTime { get; private set; }
     public IReadOnlyCollection<ExecutedExercise> ExecutedExercise { get => _executedExercise; }

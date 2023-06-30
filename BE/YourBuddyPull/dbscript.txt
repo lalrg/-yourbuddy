@@ -1,0 +1,102 @@
+-- Create the database
+CREATE DATABASE Proyecto_Luis_R;
+GO
+
+-- Use the database
+USE Proyecto_Luis_R;
+GO
+
+-- MeasurementUnit table
+CREATE TABLE [MeasurementUnit] (
+    [Id] INT PRIMARY KEY,
+    [Name] NVARCHAR(200)
+);
+
+-- Role table
+CREATE TABLE [Role] (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Name] NVARCHAR(100) UNIQUE
+);
+
+-- User table
+CREATE TABLE [User] (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Name] NVARCHAR(200),
+    [LastName] NVARCHAR(200),
+    [PasswordHash] VARBINARY(MAX),
+    [PasswordSalt] VARBINARY(MAX),
+    [Email] NVARCHAR(200),
+    [IsDeleted] BIT DEFAULT 0
+);
+
+-- ExerciseType table
+CREATE TABLE [ExerciseType] (
+    [Id] INT PRIMARY KEY,
+    [MeasurementId] INT,
+    [Name] NVARCHAR(200),
+    FOREIGN KEY ([MeasurementId]) REFERENCES [MeasurementUnit]([Id])
+);
+
+-- Exercise table
+CREATE TABLE [Exercise] (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [TypeId] INT,
+    [Name] NVARCHAR(200),
+    [Description] NVARCHAR(200),
+    [ImageUrl] NVARCHAR(200),
+    [VideoURL] NVARCHAR(200),
+    FOREIGN KEY ([TypeId]) REFERENCES [ExerciseType]([Id])
+);
+
+-- Session table
+CREATE TABLE [Session] (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [CreatedBy] UNIQUEIDENTIFIER,
+    [StartTime] DATETIME,
+    [EndTime] DATETIME,
+    FOREIGN KEY ([CreatedBy]) REFERENCES [User]([Id])
+);
+
+-- Routine table
+CREATE TABLE [Routine] (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [UserAssignedId] UNIQUEIDENTIFIER,
+    [CreatedBy] UNIQUEIDENTIFIER,
+    [IsEnabled] BIT DEFAULT 1,
+    [Name] NVARCHAR(200),
+    FOREIGN KEY ([UserAssignedId]) REFERENCES [User]([Id]),
+    FOREIGN KEY ([CreatedBy]) REFERENCES [User]([Id])
+);
+
+-- ExerciseRoutine table
+CREATE TABLE [ExerciseRoutine] (
+    [RoutineId] UNIQUEIDENTIFIER,
+    [ExerciseId] UNIQUEIDENTIFIER,
+    [Load] INT,
+    [Sets] INT,
+    [Reps] INT,
+    PRIMARY KEY ([RoutineId], [ExerciseId]),
+    FOREIGN KEY ([RoutineId]) REFERENCES [Routine]([Id]),
+    FOREIGN KEY ([ExerciseId]) REFERENCES [Exercise]([Id])
+);
+
+-- UserRole table
+CREATE TABLE [UserRole] (
+    [UserId] UNIQUEIDENTIFIER,
+    [RoleId] UNIQUEIDENTIFIER,
+    PRIMARY KEY ([UserId], [RoleId]),
+    FOREIGN KEY ([UserId]) REFERENCES [User]([Id]),
+    FOREIGN KEY ([RoleId]) REFERENCES [Role]([Id])
+);
+
+-- SessionExercise table
+CREATE TABLE [SessionExercise] (
+    [SessionId] UNIQUEIDENTIFIER,
+    [ExerciseId] UNIQUEIDENTIFIER,
+    [Reps] INT,
+    [Sets] INT,
+    [Load] INT,
+    PRIMARY KEY ([SessionId], [ExerciseId]),
+    FOREIGN KEY ([SessionId]) REFERENCES [Session]([Id]),
+    FOREIGN KEY ([ExerciseId]) REFERENCES [Exercise]([Id])
+);
