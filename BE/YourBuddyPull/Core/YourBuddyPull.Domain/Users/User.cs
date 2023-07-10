@@ -58,19 +58,17 @@ public sealed class User : BaseEntity
             }
         }
     }
-
-    private bool _isDeleted = false;
     public bool IsDeleted
     {
-        get => _isDeleted; private set
+        get => IsDeleted; private set
         {
-            if (!_isDeleted)
+            if (value)
             {
-                _isDeleted = value;
+                throw new DomainValidationException("The user is already deleted");
             }
             else
             {
-                throw new DomainValidationException("The user is already deleted");
+                IsDeleted = value;
             }
         }
     }
@@ -86,8 +84,7 @@ public sealed class User : BaseEntity
             throw new DomainValidationException("You cannot instanciate an user with a deleted status");
 
         if (roles is null)
-            throw new DomainValidationException("You cannot instanciate an user with a deleted status");
-
+            throw new DomainValidationException("You cannot instanciate an user without roles");
 
         User user = new(id, name, lastName, email)
         {

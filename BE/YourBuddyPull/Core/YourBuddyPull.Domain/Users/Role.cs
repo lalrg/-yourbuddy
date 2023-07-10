@@ -17,6 +17,7 @@ public sealed class Role : ValueObject
         {
             throw new DomainValidationException("The name of the role cannot be null");
         }
+        // validate from a list of valid roles and throw a domainvalidationerror if the role is not allowed
         return new(name);
     }
 

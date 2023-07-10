@@ -1,4 +1,5 @@
-﻿using YourBuddyPull.Domain.Shared.BaseClasses;
+﻿using YourBuddyPull.Domain.Exercises;
+using YourBuddyPull.Domain.Shared.BaseClasses;
 using YourBuddyPull.Domain.Shared.Exceptions;
 using YourBuddyPull.Domain.Shared.ValueObjects;
 
@@ -24,6 +25,14 @@ public sealed class Routine: BaseEntity
             );
     }
 
+    public void AssignToUser(Guid userId)
+    {
+        if (userId == Guid.Empty)
+            throw new DomainValidationException("The userId cannot be empty");
+
+        AssignedTo = userId;
+    }
+
     public void AddExercise(PlannedExercise exercise)
     {
         if (_plannedExercises.Any(x => x == exercise))
@@ -32,6 +41,7 @@ public sealed class Routine: BaseEntity
 
     public string Name { get; private set; }
     public CreatedBy CreatedBy { get; private set; }
+    public Guid AssignedTo { get; private set; }
     
     private List<PlannedExercise> _plannedExercises = new();
 

@@ -8,13 +8,13 @@ GO
 
 -- MeasurementUnit table
 CREATE TABLE [MeasurementUnit] (
-    [Id] INT PRIMARY KEY,
+    [Id] INT PRIMARY KEY IDENTITY,
     [Name] NVARCHAR(200)
 );
 
 -- Role table
 CREATE TABLE [Role] (
-    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Id] INT PRIMARY KEY IDENTITY,
     [Name] NVARCHAR(100) UNIQUE
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE [User] (
     [LastName] NVARCHAR(200),
     [PasswordHash] VARBINARY(MAX),
     [PasswordSalt] VARBINARY(MAX),
-    [Email] NVARCHAR(200),
+    [Email] NVARCHAR(200) UNIQUE,
     [IsDeleted] BIT DEFAULT 0
 );
 
@@ -83,7 +83,7 @@ CREATE TABLE [ExerciseRoutine] (
 -- UserRole table
 CREATE TABLE [UserRole] (
     [UserId] UNIQUEIDENTIFIER,
-    [RoleId] UNIQUEIDENTIFIER,
+    [RoleId] INT,
     PRIMARY KEY ([UserId], [RoleId]),
     FOREIGN KEY ([UserId]) REFERENCES [User]([Id]),
     FOREIGN KEY ([RoleId]) REFERENCES [Role]([Id])
