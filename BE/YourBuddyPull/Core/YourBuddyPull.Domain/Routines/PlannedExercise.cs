@@ -14,7 +14,11 @@ public sealed class PlannedExercise
         ExerciseType = exerciseType;
         ExerciseName = exerciseName;
     }
-    public static PlannedExercise Instanciate(string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
+    public static PlannedExercise Instanciate(Guid Id,string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
+    {
+        return new PlannedExercise(Id, exerciseName, reps, sets, load, exerciseType);
+    }
+    public static PlannedExercise Create(string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
     {
         return new PlannedExercise(Guid.NewGuid(), exerciseName, reps, sets, load, exerciseType);
     }

@@ -25,6 +25,16 @@ public sealed class Routine: BaseEntity
             );
     }
 
+    public static Routine Instanciate(Guid Id ,string name, CreatedBy createdBy)
+    {
+        return new Routine(
+            Id,
+            name,
+            createdBy,
+            DateTime.Now
+            );
+    }
+
     public void AssignToUser(Guid userId)
     {
         if (userId == Guid.Empty)
@@ -37,6 +47,19 @@ public sealed class Routine: BaseEntity
     {
         if (_plannedExercises.Any(x => x == exercise))
             throw new DomainValidationException("This exercise has already been added to this routine");
+        
+        _plannedExercises.Add(exercise);
+    }
+
+    public void RemoveExercise(PlannedExercise exercise)
+    {
+        if (!_plannedExercises.Any())
+            throw new DomainValidationException("There are no exercises in this routine.");
+
+        if (!_plannedExercises.Any(x=> x.ExerciseId == exercise.ExerciseId))
+            throw new DomainValidationException("There are no exercises in this routine.");
+
+        _plannedExercises.Remove(exercise);
     }
 
     public string Name { get; private set; }

@@ -8,10 +8,13 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, LoginUserRespo
 {
     private readonly IAuthenticationProvider _authProvider;
     private readonly IUserRepository _userRepository;
-    public LoginUserHandler(IAuthenticationProvider authProvider, IUserRepository userRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    public LoginUserHandler(IAuthenticationProvider authProvider, IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _authProvider = authProvider;
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+
     }
 
     public async Task<LoginUserResponse?> Handle(LoginUserCommand request, CancellationToken cancellationToken)
@@ -21,7 +24,9 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, LoginUserRespo
         if(!result)
             return null;
 
+        _unitOfWork.OpenTransaction();
         var userInfo = await _userRepository.GetUserPropertiesByUsername(request.Email);
+        _unitOfWork.CommitTransaction();
 
         return new LoginUserResponse
         {

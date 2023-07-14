@@ -7,9 +7,12 @@ namespace YourBuddyPull.Application.UseCases.Commands.Users.DisableUser;
 public class DisableUserHandler : IRequestHandler<DisableUserCommand, bool>
 {
     private readonly IUserRepository _userRepository;
-    public DisableUserHandler(IUserRepository userRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    public DisableUserHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+
     }
     public async Task<bool> Handle(DisableUserCommand request, CancellationToken cancellationToken)
     {
@@ -27,7 +30,10 @@ public class DisableUserHandler : IRequestHandler<DisableUserCommand, bool>
             userFromStorage.IsDeleted,
             roles);
 
+        _unitOfWork.OpenTransaction();
         domainUser.SetAsDeleted();
+        _unitOfWork.CommitTransaction();
+
         return true;
     }
 }

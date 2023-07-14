@@ -7,9 +7,11 @@ namespace YourBuddyPull.Application.UseCases.Commands.Users.UpdateProperties;
 public class UpdatePropertiesHandler : IRequestHandler<UpdatePropertiesCommand, bool>
 {
     private readonly IUserRepository _userRepository;
-    public UpdatePropertiesHandler(IUserRepository userRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    public UpdatePropertiesHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
     public async Task<bool> Handle(UpdatePropertiesCommand request, CancellationToken cancellationToken)
     {
@@ -24,7 +26,9 @@ public class UpdatePropertiesHandler : IRequestHandler<UpdatePropertiesCommand, 
             user.IsDeleted,
             userRoles);
 
+        _unitOfWork.OpenTransaction();
         domainUser.UpdateProperties(user.Name, user.LastName, user.Email);
+        _unitOfWork.CommitTransaction();
 
         return await _userRepository.UpdateUserProperties(domainUser);
     }

@@ -7,9 +7,12 @@ namespace YourBuddyPull.Application.UseCases.Commands.Users.RegisterUser;
 public class RegisterHandler : IRequestHandler<RegisterCommand, bool>
 {
     private readonly IUserRepository _userRepository;
-    public RegisterHandler(IUserRepository userRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    public RegisterHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+
     }
     public Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
@@ -20,6 +23,10 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, bool>
             request.Email, 
             roles);
 
-        return _userRepository.CreateUser(user);
+        _unitOfWork.OpenTransaction();
+        var result = _userRepository.CreateUser(user);
+        _unitOfWork.CommitTransaction();
+        
+        return result;
     }
 }

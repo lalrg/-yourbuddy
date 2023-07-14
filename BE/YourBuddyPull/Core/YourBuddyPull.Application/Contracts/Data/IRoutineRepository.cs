@@ -9,6 +9,7 @@ public interface IRoutineRepository
 {
     Task<bool> AssignToUser(Routine routine);
     Task<bool> Create(Routine routine);
+    Task<bool> CopyExercisesFrom(Routine oldRoutine, Routine newRoutine);
     Task<bool> UpdateExercisesForRoutine(Routine routine);
     Task<bool> DisableRoutine(Routine routine);
     Task<RoutineInformationDTO> GetRoutinePropertiesByGuid(Guid routineId);
