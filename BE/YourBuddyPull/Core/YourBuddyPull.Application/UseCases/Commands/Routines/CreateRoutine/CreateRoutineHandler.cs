@@ -22,7 +22,7 @@ public class CreateRoutineHandler : IRequestHandler<CreateRoutineCommand, bool>
 
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.Create(domainRoutine);
-        _unitOfWork.CommitTransaction();
+        await _unitOfWork.CommitTransaction();
 
         return result;
     }

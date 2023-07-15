@@ -5,6 +5,7 @@ public struct ExerciseTrainingSessionInformationDTO
     public Guid ExerciseId;
     public string Name;
     public string Description;
+    public string SetsDescription;
     public string ImageUrl;
     public string VideoUrl;
     public int Load;

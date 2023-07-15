@@ -6,4 +6,7 @@ public class AddExerciseToRoutineCommand: IRequest<bool>
 {
     public Guid ExerciseId { get; set; }
     public Guid RoutineId { get; set; }
+    public int reps { get; set; }
+    public int load { get; set; }
+    public int sets { get; set; }
 }

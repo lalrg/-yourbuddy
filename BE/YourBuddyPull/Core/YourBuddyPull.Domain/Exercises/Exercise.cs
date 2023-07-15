@@ -5,26 +5,32 @@ namespace YourBuddyPull.Domain.Exercises;
 
 public sealed class Exercise
 {
-    private Exercise(Guid exerciseId, string exerciseName, int reps, int sets, int load, string imageUrl, string videoUrl, ExerciseType exerciseType, string exerciseDescription)
+    private Exercise(Guid exerciseId, string exerciseName, string imageUrl, string videoUrl, ExerciseType exerciseType, string exerciseDescription)
     {
         ExerciseId = exerciseId;
-        Reps = reps;
-        Sets = sets;
-        Load = load;
         ExerciseType = exerciseType;
         ExerciseName = exerciseName;
         ExerciseDescription = exerciseDescription;
         VideoURL = videoUrl;
         ImageUrl = imageUrl;
     }
-    public static Exercise Create(string exerciseName, int reps, int sets, int load, ExerciseType exerciseType, string exerciseDescription, string imageUrl, string videoUrl)
+    public static Exercise Create(string exerciseName, ExerciseType exerciseType, string exerciseDescription, string imageUrl, string videoUrl)
     {
-        return new Exercise(Guid.NewGuid(), exerciseName, reps, sets, load, imageUrl, videoUrl, exerciseType, exerciseDescription);
+        return new Exercise(Guid.NewGuid(), exerciseName, imageUrl, videoUrl, exerciseType, exerciseDescription);
     }
-    public static Exercise Instanciate(Guid exerciseId, string exerciseName, int reps, int sets, int load, ExerciseType exerciseType, string exerciseDescription, string imageUrl, string videoUrl)
+    public static Exercise Instanciate(Guid exerciseId, string exerciseName, ExerciseType exerciseType, string exerciseDescription, string imageUrl, string videoUrl)
     {
-        return new Exercise(exerciseId, exerciseName, reps, sets, load, imageUrl, videoUrl, exerciseType, exerciseDescription);
+        return new Exercise(exerciseId, exerciseName, imageUrl, videoUrl, exerciseType, exerciseDescription);
     }
+
+    public void UpdateProperties(string exerciseName, string exerciseDescription, string videoURL, string imageUrl)
+    {
+        ExerciseName = exerciseName;
+        ExerciseDescription = exerciseDescription;
+        VideoURL = videoURL;
+        ImageUrl = imageUrl;
+    }
+
     public Guid ExerciseId
     {
         get => _exerciseId; set
@@ -71,43 +77,5 @@ public sealed class Exercise
         }
     }
     private string _imageUrl { get; set; } = string.Empty;
-    public int Reps { get; set; }
-    public int Sets
-    {
-        get => _sets; set
-        {
-            if (value < 1)
-                throw new DomainValidationException("The sets must be more than 0");
-            _sets = value;
-        }
-    }
-    private int _sets { get; set; } = 0;
-    public int Load
-    {
-        get => _load; set
-        {
-            if (value < 1)
-                throw new DomainValidationException("The value must be more than 0");
-            _load = value;
-        }
-    }
-    private int _load { get; set; }
-    public string WorkDescription
-    {
-        get
-        {
-            switch (ExerciseType.TypeOfExercise)
-            {
-                case TypeOfExercise.MeasuredByTime:
-                    return $"{Sets} series of {Load} {ExerciseType.MeasurementUnit}";
-
-                case TypeOfExercise.MeasuredByWeight:
-                    return $"{Sets} series of {Reps} reps with {Load} {ExerciseType.MeasurementUnit}";
-
-                default:
-                    return string.Empty; // this case will never happen
-            }
-        }
-    }
     public ExerciseType ExerciseType { get; private set; }
 }

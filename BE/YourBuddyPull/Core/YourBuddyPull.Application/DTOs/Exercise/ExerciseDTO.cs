@@ -7,4 +7,5 @@ public struct ExerciseDTO
     public string Description;
     public string ImageUrl;
     public string VideoUrl;
+    public string Type;
 }

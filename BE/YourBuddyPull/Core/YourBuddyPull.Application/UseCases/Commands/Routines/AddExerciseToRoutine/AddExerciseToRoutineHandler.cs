@@ -19,16 +19,20 @@ public class AddExerciseToRoutineHandler : IRequestHandler<AddExerciseToRoutineC
     public async Task<bool> Handle(AddExerciseToRoutineCommand request, CancellationToken cancellationToken)
     {
         var persistanceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
-        var domainRoutine = Routine.Instanciate(persistanceRoutine.Id, persistanceRoutine.CreatedByName, CreatedBy.Instanciate(persistanceRoutine.CreatedBy, persistanceRoutine.CreatedByName));
+        var domainRoutine = Routine.Instanciate(
+            persistanceRoutine.Id, 
+            persistanceRoutine.CreatedByName, 
+            CreatedBy.Instanciate(persistanceRoutine.CreatedBy, persistanceRoutine.CreatedByName),
+            persistanceRoutine.isEnabled);
         
         var persistanceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
 
-        var domainExercise = PlannedExercise.Create(persistanceExercise.ExerciseName, persistanceExercise.Reps, persistanceExercise.Sets, persistanceExercise.Load, persistanceExercise.ExerciseType);
+        var domainExercise = PlannedExercise.Create(persistanceExercise.ExerciseName, request.reps, request.sets, request.load, persistanceExercise.ExerciseType);
 
         domainRoutine.AddExercise(domainExercise);
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.UpdateExercisesForRoutine(domainRoutine);
-        _unitOfWork.CommitTransaction();
+        await _unitOfWork.CommitTransaction();
 
         return result;
     }

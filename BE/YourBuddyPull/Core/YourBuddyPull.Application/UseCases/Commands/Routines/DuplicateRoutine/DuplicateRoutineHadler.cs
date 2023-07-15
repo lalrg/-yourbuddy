@@ -25,7 +25,8 @@ public class DuplicateRoutineHadler : IRequestHandler<DuplicateRoutineCommand, G
         var existingRoutineDomain = Routine.Instanciate(
             existingRoutine.Id, 
             existingRoutine.Name, 
-            CreatedBy.Instanciate(existingRoutine.CreatedBy, existingRoutine.CreatedByName));
+            CreatedBy.Instanciate(existingRoutine.CreatedBy, existingRoutine.CreatedByName),
+            existingRoutine.isEnabled);
 
         var newRoutine = Routine.Create(
             $"{existingRoutine.Name}_copy", 
@@ -43,7 +44,7 @@ public class DuplicateRoutineHadler : IRequestHandler<DuplicateRoutineCommand, G
 
         await _routineRepository.CopyExercisesFrom(existingRoutineDomain, newRoutine);
 
-        _unitOfWork.CommitTransaction();
+        await _unitOfWork.CommitTransaction();
 
         return newRoutine.Id;
     }

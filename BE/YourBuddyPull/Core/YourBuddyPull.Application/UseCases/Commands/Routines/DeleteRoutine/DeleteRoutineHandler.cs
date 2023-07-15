@@ -21,12 +21,13 @@ public class DeleteRoutineHandler : IRequestHandler<DeleteRoutineCommand, bool>
         var routine = Routine.Instanciate(
             routineFromData.Id,
             routineFromData.Name,
-            CreatedBy.Instanciate(routineFromData.CreatedBy, routineFromData.CreatedByName)
+            CreatedBy.Instanciate(routineFromData.CreatedBy, routineFromData.CreatedByName),
+            routineFromData.isEnabled
             );
 
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.DisableRoutine(routine);
-        _unitOfWork.CommitTransaction();
+        await _unitOfWork.CommitTransaction();
 
         return result;
     }

@@ -3,6 +3,6 @@
 public interface IUnitOfWork
 {
     void OpenTransaction();
-    void CommitTransaction();
+    Task CommitTransaction();
     void AbortTransaction();
 }

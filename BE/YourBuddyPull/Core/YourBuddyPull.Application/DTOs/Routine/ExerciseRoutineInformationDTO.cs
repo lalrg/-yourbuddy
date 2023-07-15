@@ -7,6 +7,7 @@ public struct ExerciseRoutineInformationDTO
     public string Description;
     public string ImageUrl;
     public string VideoUrl;
+    public string SetsDescription;
     public int Load;
     public int Sets;
     public int Reps;

@@ -9,7 +9,7 @@ public interface IExerciseRepository
     Task<bool> Create(Exercise exercise);
     Task<bool> Update(Exercise exercise);
     Task<bool> Delete(Exercise exercise);
-    Task<Exercise> GetExerciseInformationById(Guid id);
-    Task<List<Exercise>> GetAll();
+    Task<ExerciseDTO> GetExerciseInformationById(Guid id);
+    Task<List<ExerciseDTO>> GetAll();
     Task<PaginationResultDTO<ExerciseDTO>> GetAllPaged(PaginationDTO pagination);
 }
