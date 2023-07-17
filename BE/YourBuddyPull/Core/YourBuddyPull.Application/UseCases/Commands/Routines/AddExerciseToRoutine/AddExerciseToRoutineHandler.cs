@@ -27,7 +27,12 @@ public class AddExerciseToRoutineHandler : IRequestHandler<AddExerciseToRoutineC
         
         var persistanceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
 
-        var domainExercise = PlannedExercise.Create(persistanceExercise.ExerciseName, request.reps, request.sets, request.load, persistanceExercise.ExerciseType);
+        var domainExercise = PlannedExercise.Create(
+            persistanceExercise.Name, 
+            request.reps, 
+            request.sets, 
+            request.load, 
+            new ExerciseType(MapExerciseType(persistanceExercise.Type)));
 
         domainRoutine.AddExercise(domainExercise);
         _unitOfWork.OpenTransaction();
@@ -35,5 +40,18 @@ public class AddExerciseToRoutineHandler : IRequestHandler<AddExerciseToRoutineC
         await _unitOfWork.CommitTransaction();
 
         return result;
+    }
+
+    private TypeOfExercise MapExerciseType(string exerciseType)
+    {
+        switch (exerciseType.ToLower())
+        {
+            case "time":
+                return TypeOfExercise.MeasuredByTime;
+            case "weight":
+                return TypeOfExercise.MeasuredByWeight;
+            default:
+                return TypeOfExercise.MeasuredByWeight;
+        }
     }
 }

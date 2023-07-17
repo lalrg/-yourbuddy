@@ -21,9 +21,9 @@ public sealed class ExerciseType : ValueObject
             switch (TypeOfExercise)
             {
                 case TypeOfExercise.MeasuredByWeight:
-                    return "Measured by weight";
+                    return "weight";
                 case TypeOfExercise.MeasuredByTime:
-                    return "Measured by time";
+                    return "time";
                 default:
                     return string.Empty; //this case will never happen
             }

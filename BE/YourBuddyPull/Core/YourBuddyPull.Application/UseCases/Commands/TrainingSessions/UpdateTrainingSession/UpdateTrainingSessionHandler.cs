@@ -18,7 +18,7 @@ public class UpdateTrainingSessionHandler : IRequestHandler<UpdateTrainingSessio
     {
         var persistanceTrainingSession = await _trainingSessionRepository.GetById(request.SessionId);
 
-        var domainCreatedBy = CreatedBy.Instanciate(persistanceTrainingSession.CreatedById, persistanceTrainingSession.CreatedByName);
+        var domainCreatedBy = CreatedBy.Instanciate(persistanceTrainingSession.CreatedBy, persistanceTrainingSession.CreatedByName);
         var domainTrainingSession = TrainingSession.Instanciate(request.SessionId, domainCreatedBy, persistanceTrainingSession.StartTime, persistanceTrainingSession.EndTime);
 
         domainTrainingSession.UpdateProperties(request.startTime, request.endTime);

@@ -11,4 +11,6 @@ public struct ExerciseRoutineInformationDTO
     public int Load;
     public int Sets;
     public int Reps;
+    public string Type;
+    public string MeasurementUnit;
 }
