@@ -1,49 +1,112 @@
-﻿using YourBuddyPull.Application.Contracts.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.DTOs.Shared;
 using YourBuddyPull.Application.DTOs.User;
 using YourBuddyPull.Domain.Users;
+using YourBuddyPull.Repository.SQLServer.DatabaseModels;
 
 namespace YourBuddyPull.Repository.SQLServer.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    public Task<bool> CreateUser(User user)
+    private readonly ProyectoLuisRContext _context;
+    public UserRepository(ProyectoLuisRContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+    public async Task<bool> CreateUser(Domain.Users.User user)
+    {
+        var persistenceUser = new DatabaseModels.User()
+        {
+            Id = user.Id,
+            Email = user.Email,
+            IsDeleted = false,
+            LastName = user.LastName,
+            Name = user.Name,
+            PasswordHash = null,
+            PasswordSalt = null,
+            Roles = await _context.Roles.Where(x=> user.Roles.Any(r => r.Name == x.Name)).ToListAsync()
+        };
+
+        _context.Users.Add(persistenceUser);
+
+        return true;
     }
 
-    public Task<bool> DeactivateUser(User user)
+    public async Task<bool> DeactivateUser(Domain.Users.User user)
     {
-        throw new NotImplementedException();
+        var persistenceUser = await _context.Users.SingleAsync(x => x.Id == user.Id);
+        persistenceUser.IsDeleted = true;
+        _context.Entry(persistenceUser).State = EntityState.Modified;
+
+        return true;
     }
 
     public Task<List<UserInformationDTO>> GetAllUsers()
     {
+        // not used for now
         throw new NotImplementedException();
     }
 
-    public Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination)
+    public async Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination)
     {
-        throw new NotImplementedException();
+        var itemsToSkip = (pagination.CurrentPage - 1) * pagination.PageSize;
+        var baseQuery = _context.Users.AsNoTracking();
+
+        var count = await baseQuery.CountAsync();
+
+        var items = await baseQuery.Skip(itemsToSkip).Take(pagination.PageSize)
+            .Select(x=>MapToUserInfoDTO(x)).ToListAsync();
+
+        return new()
+        {
+            CurrentPage = pagination.CurrentPage,
+            Items = items,
+            PageSize = pagination.PageSize,
+            TotalCount = count
+        };
     }
 
-    public Task<UserInformationDTO> GetUserPropertiesByGuid(Guid userId)
+    public async Task<UserInformationDTO> GetUserPropertiesByGuid(Guid userId)
     {
-        throw new NotImplementedException();
+        return MapToUserInfoDTO( await _context.Users.SingleAsync(x=> x.Id == userId) );
     }
 
-    public Task<UserInformationDTO> GetUserPropertiesByUsername(string username)
+    public async Task<UserInformationDTO> GetUserPropertiesByUsername(string username)
     {
-        throw new NotImplementedException();
+        return MapToUserInfoDTO(await _context.Users.SingleAsync(x => x.Email == username));
     }
 
-    public Task<bool> UpdateRoles(User user)
+    public async Task<bool> UpdateRoles(Domain.Users.User user)
     {
-        throw new NotImplementedException();
+        var persistanceUser = await _context.Users.SingleAsync(x=> x.Id == user.Id);
+        persistanceUser.Roles = await _context.Roles.Where(x => user.Roles.Any(r => r.Name == x.Name)).ToListAsync();
+
+        _context.Entry(persistanceUser).State = EntityState.Modified;
+        return true;
     }
 
-    public Task<bool> UpdateUserProperties(User user)
+    public async Task<bool> UpdateUserProperties(Domain.Users.User user)
     {
-        throw new NotImplementedException();
+        var persistenceUser = await _context.Users.SingleAsync(x=>x.Id == user.Id);
+        persistenceUser.Email = user.Email;
+        persistenceUser.LastName = user.LastName;
+        persistenceUser.Name = user.Name;
+        
+        _context.Entry(persistenceUser).State = EntityState.Modified;
+        return true;
+
+    }
+    private UserInformationDTO MapToUserInfoDTO(DatabaseModels.User user)
+    {
+        return new()
+        {
+            Email = user.Email,
+            Id = user.Id,
+            IsDeleted = (bool)user.IsDeleted,
+            LastName = user.LastName,
+            Name = user.Name,
+            Roles = user.Roles.Select(x=>x.Name).ToList()
+        };
     }
 }

@@ -62,6 +62,7 @@ public sealed class ExecutedExercise
                     return string.Empty; // this case will never happen
             }
         }
+        private set { }
     }
     public ExerciseType ExerciseType { get; private set; }
 }

@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Core\YourBuddyPull.Application\YourBuddyPull.Application.csproj" />
     <ProjectReference Include="..\..\Core\YourBuddyPull.Domain\YourBuddyPull.Domain.csproj" />
     <ProjectReference Include="..\..\Infraestructure\YourBuddyPull.Infraestructure.EmailSender\YourBuddyPull.Infraestructure.EmailSender.csproj" />

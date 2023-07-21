@@ -3,19 +3,19 @@ using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Domain.Routines;
 using YourBuddyPull.Domain.Shared.ValueObjects;
 
-namespace YourBuddyPull.Application.UseCases.Commands.Routines.AssignUserToRoutine;
+namespace YourBuddyPull.Application.UseCases.Commands.Routines.UnassignUserToRoutine;
 
-public class AssignRoutineHandler : IRequestHandler<AssignUserToRoutineCommand, bool>
+public class UnassignRoutineHandler : IRequestHandler<UnassignUserToRoutineCommand, bool>
 {
     private readonly IRoutineRepository _routineRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public AssignRoutineHandler(IRoutineRepository routineRepository, IUnitOfWork unitOfWork)
+    public UnassignRoutineHandler(IRoutineRepository routineRepository, IUnitOfWork unitOfWork)
     {
         _routineRepository = routineRepository;
         _unitOfWork = unitOfWork;
 
     }
-    public async Task<bool> Handle(AssignUserToRoutineCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UnassignUserToRoutineCommand request, CancellationToken cancellationToken)
     {
         var persistenceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
         var domainRoutine = Routine.Instanciate(
@@ -23,7 +23,7 @@ public class AssignRoutineHandler : IRequestHandler<AssignUserToRoutineCommand, 
             persistenceRoutine.Name,
             CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName), persistenceRoutine.isEnabled);
 
-        domainRoutine.AssignToUser(request.UserId);
+        domainRoutine.UnassignUser();
 
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.AssignToUser(domainRoutine);

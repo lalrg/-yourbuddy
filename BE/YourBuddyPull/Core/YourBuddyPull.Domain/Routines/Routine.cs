@@ -71,6 +71,11 @@ public sealed class Routine: BaseEntity
         AssignedTo = Guid.Empty;
     }
 
+    public void UnassignUser()
+    {
+        AssignedTo = Guid.Empty;
+    }
+
     public string Name { get; private set; }
     public bool IsEnabled { get; private set; }
     public CreatedBy CreatedBy { get; private set; }

@@ -2,7 +2,7 @@
 
 namespace YourBuddyPull.Application.UseCases.Commands.Exercises.EditExercise;
 
-public class RemoveExerciseCommand: IRequest<bool>
+public class EditExerciseCommand: IRequest<bool>
 {
     public Guid Id;
     public string Name;

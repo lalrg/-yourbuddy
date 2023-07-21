@@ -33,8 +33,8 @@ public class ExerciseRepository : IExerciseRepository
 
     public async Task<bool> Delete(Domain.Exercises.Exercise exercise)
     {
-        var persistanceExercise = await _context.Exercises.AsNoTracking().SingleAsync(x=> x.Id == exercise.ExerciseId);
-        _context.Exercises.Remove(persistanceExercise);
+        var persistenceExercise = await _context.Exercises.AsNoTracking().SingleAsync(x=> x.Id == exercise.ExerciseId);
+        _context.Exercises.Remove(persistenceExercise);
         
         return true;
     }
@@ -72,28 +72,28 @@ public class ExerciseRepository : IExerciseRepository
 
     public async Task<ExerciseDTO> GetExerciseInformationById(Guid id)
     {
-        var persistanceExercise = await _context.Exercises.Include(x=>x.Type).AsNoTracking().SingleAsync(e=>e.Id == id);
+        var persistenceExercise = await _context.Exercises.Include(x=>x.Type).AsNoTracking().SingleAsync(e=>e.Id == id);
         return new ExerciseDTO()
         {
-            Description = persistanceExercise.Description,
-            ExerciseId= persistanceExercise.Id,
-            ImageUrl = persistanceExercise.ImageUrl,
-            Name = persistanceExercise.Name,
-            Type = persistanceExercise.Type.Name,
-            VideoUrl = persistanceExercise.VideoUrl
+            Description = persistenceExercise.Description,
+            ExerciseId= persistenceExercise.Id,
+            ImageUrl = persistenceExercise.ImageUrl,
+            Name = persistenceExercise.Name,
+            Type = persistenceExercise.Type.Name,
+            VideoUrl = persistenceExercise.VideoUrl
         };
     }
 
     public async Task<bool> Update(Domain.Exercises.Exercise exercise)
     {
-        var persistanceExercise = await _context.Exercises.SingleAsync(x=>x.Id == exercise.ExerciseId);
+        var persistenceExercise = await _context.Exercises.SingleAsync(x=>x.Id == exercise.ExerciseId);
         
-        persistanceExercise.VideoUrl = exercise.VideoURL;
-        persistanceExercise.Description = exercise.ExerciseDescription;
-        persistanceExercise.ImageUrl = exercise.ImageUrl;
-        persistanceExercise.Name = exercise.ExerciseName;
+        persistenceExercise.VideoUrl = exercise.VideoURL;
+        persistenceExercise.Description = exercise.ExerciseDescription;
+        persistenceExercise.ImageUrl = exercise.ImageUrl;
+        persistenceExercise.Name = exercise.ExerciseName;
 
-        _context.Entry(persistanceExercise).State = EntityState.Modified;
+        _context.Entry(persistenceExercise).State = EntityState.Modified;
 
         return true;
     }

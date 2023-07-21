@@ -16,50 +16,50 @@ public class RoutineRepository : IRoutineRepository
     }
     public async Task<bool> AssignToUser(Domain.Routines.Routine routine)
     {
-        var persistanceRoutine = await _context.Routines.SingleAsync(x=>x.Id == routine.Id);
+        var persistenceRoutine = await _context.Routines.SingleAsync(x=>x.Id == routine.Id);
 
-        persistanceRoutine.UserAssignedId = routine.AssignedTo;
-        _context.Entry(persistanceRoutine).State = EntityState.Modified;
+        persistenceRoutine.UserAssignedId = routine.AssignedTo;
+        _context.Entry(persistenceRoutine).State = EntityState.Modified;
 
         return true;
     }
 
     public async Task<bool> CopyExercisesFrom(Domain.Routines.Routine oldRoutine, Domain.Routines.Routine newRoutine)
     {
-        var persistanceFrom = await _context.Routines.Include(x => x.ExerciseRoutines).AsNoTracking().SingleAsync(x=> x.Id == oldRoutine.Id);
-        var persistanceTo = await _context.Routines.SingleAsync(x=> x.Id == newRoutine.Id);
+        var persistenceFrom = await _context.Routines.Include(x => x.ExerciseRoutines).AsNoTracking().SingleAsync(x=> x.Id == oldRoutine.Id);
+        var persistenceTo = await _context.Routines.SingleAsync(x=> x.Id == newRoutine.Id);
 
-        persistanceTo.ExerciseRoutines = persistanceFrom.ExerciseRoutines.Select(x => 
+        persistenceTo.ExerciseRoutines = persistenceFrom.ExerciseRoutines.Select(x => 
             {
-                x.RoutineId = persistanceTo.Id; 
+                x.RoutineId = persistenceTo.Id; 
                 return x;
             }).ToList();
 
-        _context.Entry(persistanceTo).State = EntityState.Modified;
+        _context.Entry(persistenceTo).State = EntityState.Modified;
 
         return true;
     }
 
     public Task<bool> Create(Domain.Routines.Routine routine)
     {
-        DatabaseModels.Routine persistanceRoutine = new() {
+        DatabaseModels.Routine persistenceRoutine = new() {
             Id = routine.Id,
             Name = routine.Name,
             CreatedBy = routine.CreatedBy.CreatedById,
             IsEnabled = true
         };
 
-        _context.Routines.Add(persistanceRoutine);
+        _context.Routines.Add(persistenceRoutine);
 
         return Task.FromResult(true);
     }
 
     public async Task<bool> DisableRoutine(Domain.Routines.Routine routine)
     {
-        var persistanceRoutine = await _context.Routines.SingleAsync(x=> x.Id == routine.Id);
+        var persistenceRoutine = await _context.Routines.SingleAsync(x=> x.Id == routine.Id);
 
-        persistanceRoutine.IsEnabled = false;
-        _context.Entry(persistanceRoutine).State = EntityState.Modified;
+        persistenceRoutine.IsEnabled = false;
+        _context.Entry(persistenceRoutine).State = EntityState.Modified;
 
         return true;
     }
@@ -137,47 +137,47 @@ public class RoutineRepository : IRoutineRepository
 
     public async Task<RoutineInformationDTO> GetRoutinePropertiesByGuid(Guid routineId)
     {
-        var persistanceRoutine = await _context
+        var persistenceRoutine = await _context
             .Routines
             .AsNoTracking()
             .Include(x=>x.CreatedByNavigation)
             .Include(x=>x.ExerciseRoutines)
             .SingleOrDefaultAsync(x=> x.Id == routineId);
 
-        var createdByName = $"{persistanceRoutine.CreatedByNavigation.Name} {persistanceRoutine.CreatedByNavigation.LastName}";
+        var createdByName = $"{persistenceRoutine.CreatedByNavigation.Name} {persistenceRoutine.CreatedByNavigation.LastName}";
 
         return new()
         {
-            CreatedBy = (Guid)persistanceRoutine.CreatedBy,
+            CreatedBy = (Guid)persistenceRoutine.CreatedBy,
             CreatedByName = createdByName,
-            Name = persistanceRoutine.Name,
+            Name = persistenceRoutine.Name,
             Id = routineId,
-            isEnabled = (bool)persistanceRoutine.IsEnabled,
-            Execises = persistanceRoutine.ExerciseRoutines.Select(MapExercises).ToList()
+            isEnabled = (bool)persistenceRoutine.IsEnabled,
+            Execises = persistenceRoutine.ExerciseRoutines.Select(MapExercises).ToList()
         };
     }
 
     public async Task<bool> UpdateExercisesForRoutine(Domain.Routines.Routine routine)
     {
-        var persistanceRoutine = await _context.Routines.Include(x=>x.ExerciseRoutines).SingleAsync(x => x.Id == routine.Id);
+        var persistenceRoutine = await _context.Routines.Include(x=>x.ExerciseRoutines).SingleAsync(x => x.Id == routine.Id);
 
-        var exercisesToRemove = persistanceRoutine.ExerciseRoutines
+        var exercisesToRemove = persistenceRoutine.ExerciseRoutines
             .Where(x=> x.RoutineId == routine.Id && !routine.PlannedExercises.Any(y=>y.ExerciseId == x.ExerciseId)).ToList();
 
-        var exercisesToAdd = routine.PlannedExercises.Where(x=> !persistanceRoutine.ExerciseRoutines.Any(y=> y.ExerciseId ==x.ExerciseId)).ToList();
+        var exercisesToAdd = routine.PlannedExercises.Where(x=> !persistenceRoutine.ExerciseRoutines.Any(y=> y.ExerciseId ==x.ExerciseId)).ToList();
 
         exercisesToRemove.ForEach(
-            x => persistanceRoutine.ExerciseRoutines.Remove(x));
+            x => persistenceRoutine.ExerciseRoutines.Remove(x));
 
         exercisesToAdd.ForEach(
-            x => persistanceRoutine.ExerciseRoutines.Add(new()
+            x => persistenceRoutine.ExerciseRoutines.Add(new()
             {
                 ExerciseId = x.ExerciseId,
                 RoutineId = routine.Id
             })
             );
 
-        _context.Entry(persistanceRoutine).State = EntityState.Modified;
+        _context.Entry(persistenceRoutine).State = EntityState.Modified;
 
 
         return true;

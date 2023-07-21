@@ -4,7 +4,7 @@ using YourBuddyPull.Application.DTOs.Shared;
 
 namespace YourBuddyPull.Application.UseCases.Queries.Exercises.GetExercisesList;
 
-public class GetSingleExerciseQuery
+public class GetExercisesListQuery
     : IRequest<PaginationResultDTO<ExerciseDTO>>
 {
     public int CurrentPage { get; set; }

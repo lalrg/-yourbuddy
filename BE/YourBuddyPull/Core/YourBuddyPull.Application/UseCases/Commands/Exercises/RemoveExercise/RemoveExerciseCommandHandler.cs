@@ -17,14 +17,14 @@ public class RemoveExerciseCommandHandler : IRequestHandler<RemoveExerciseComman
     }
     public async Task<bool> Handle(RemoveExerciseCommand request, CancellationToken cancellationToken)
     {
-        var persistanceExercise = await _exerciseRepository.GetExerciseInformationById(request.Id);
+        var persistenceExercise = await _exerciseRepository.GetExerciseInformationById(request.Id);
         var domainExercise = Exercise.Instanciate(
-            persistanceExercise.ExerciseId,
-            persistanceExercise.Name,
-            new ExerciseType(MapTypeOfExercise(persistanceExercise.Type)),
-            persistanceExercise.Description,
-            persistanceExercise.ImageUrl,
-            persistanceExercise.VideoUrl);
+            persistenceExercise.ExerciseId,
+            persistenceExercise.Name,
+            new ExerciseType(MapTypeOfExercise(persistenceExercise.Type)),
+            persistenceExercise.Description,
+            persistenceExercise.ImageUrl,
+            persistenceExercise.VideoUrl);
 
         _unitOfWork.OpenTransaction();
         var result = await _exerciseRepository.Delete(domainExercise); 

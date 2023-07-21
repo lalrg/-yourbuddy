@@ -5,7 +5,7 @@ using YourBuddyPull.Application.DTOs.Shared;
 
 namespace YourBuddyPull.Application.UseCases.Queries.Routines.GetAllRoutines;
 
-public class GetRoutinesListHandler : IRequestHandler<GetRoutinesForUserQuery, PaginationResultDTO<RoutineInformationDTO>>
+public class GetRoutinesListHandler : IRequestHandler<GetRoutinesListQuery, PaginationResultDTO<RoutineInformationDTO>>
 {
     private readonly IRoutineRepository _routineRepository;
 
@@ -13,7 +13,7 @@ public class GetRoutinesListHandler : IRequestHandler<GetRoutinesForUserQuery, P
     {
         _routineRepository = routineRepository;
     }
-    public async Task<PaginationResultDTO<RoutineInformationDTO>> Handle(GetRoutinesForUserQuery request, CancellationToken cancellationToken)
+    public async Task<PaginationResultDTO<RoutineInformationDTO>> Handle(GetRoutinesListQuery request, CancellationToken cancellationToken)
     {
         var paginationData = new PaginationDTO()
         {

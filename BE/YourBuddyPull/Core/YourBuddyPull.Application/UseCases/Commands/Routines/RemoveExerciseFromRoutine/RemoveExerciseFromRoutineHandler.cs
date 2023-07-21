@@ -19,10 +19,10 @@ public class RemoveExerciseFromRoutineHandler : IRequestHandler<RemoveExerciseFr
     }
     public async Task<bool> Handle(RemoveExerciseFromRoutineCommand request, CancellationToken cancellationToken)
     {
-        var persistanceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
-        var domainRoutine = Routine.Instanciate(persistanceRoutine.Id, persistanceRoutine.CreatedByName, CreatedBy.Instanciate(persistanceRoutine.CreatedBy, persistanceRoutine.CreatedByName), persistanceRoutine.isEnabled);
+        var persistenceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
+        var domainRoutine = Routine.Instanciate(persistenceRoutine.Id, persistenceRoutine.CreatedByName, CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName), persistenceRoutine.isEnabled);
 
-        var persistanceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
+        var persistenceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
         var plannedExercise = domainRoutine.PlannedExercises.Single(e => e.ExerciseId == request.ExerciseId);
 
         var domainExercise = PlannedExercise.Instanciate(

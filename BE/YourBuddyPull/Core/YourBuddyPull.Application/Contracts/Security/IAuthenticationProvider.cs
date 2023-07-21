@@ -5,7 +5,11 @@ namespace YourBuddyPull.Application.Contracts.Security;
 public interface IAuthenticationProvider
 {
     // we should handle the db call inside this method.
-    public Task<bool> Authenticate(string email, string password); 
+    public Task<string> Authenticate(
+        string email,
+        string password,
+        string name,
+        List<string> roles); 
 
     // This should also deal with database update
     // after generating a password we should raise an event to send an email.

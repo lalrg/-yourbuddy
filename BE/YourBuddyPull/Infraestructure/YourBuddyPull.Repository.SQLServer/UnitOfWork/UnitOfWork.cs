@@ -1,12 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using YourBuddyPull.Application.Contracts.Data;
 
-namespace YourBuddyPull.Repository.SQLServer.UnitOfWork
+namespace YourBuddyPull.Repository.SQLServer.UnitOfWork;
+
+public class UnitOfWork : IUnitOfWork
 {
-    internal class UnitOfWork
+    private readonly ProyectoLuisRContext _context;
+    public UnitOfWork(ProyectoLuisRContext context)
+    {
+        _context = context;
+    }
+    public void AbortTransaction()
+    {
+    }
+
+    public async Task CommitTransaction()
+    {
+        await _context.SaveChangesAsync();
+    }
+
+    public void OpenTransaction()
     {
     }
 }
