@@ -24,6 +24,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\YourBuddyPull.Application\YourBuddyPull.Application.csproj" />
     <ProjectReference Include="..\..\Core\YourBuddyPull.Domain\YourBuddyPull.Domain.csproj" />
+    <ProjectReference Include="..\..\Infraestructure\YourBuddyPull.Infraestructure.AuthenticationProvider\YourBuddyPull.Infraestructure.AuthenticationProvider.csproj" />
+    <ProjectReference Include="..\..\Infraestructure\YourBuddyPull.Infraestructure.ConfigurationProvider\YourBuddyPull.Infraestructure.ConfigurationProvider.csproj" />
     <ProjectReference Include="..\..\Infraestructure\YourBuddyPull.Infraestructure.EmailSender\YourBuddyPull.Infraestructure.EmailSender.csproj" />
     <ProjectReference Include="..\..\Infraestructure\YourBuddyPull.Repository.SQLServer\YourBuddyPull.Repository.SQLServer.csproj" />
   </ItemGroup>

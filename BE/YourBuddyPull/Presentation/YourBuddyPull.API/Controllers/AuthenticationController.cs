@@ -17,7 +17,7 @@ public class AuthenticationController : ControllerBase
     {
         _mediator = mediator;
     }
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<IActionResult> Login(LoginVM vm)
     {
         if(!ModelState.IsValid)
@@ -40,7 +40,7 @@ public class AuthenticationController : ControllerBase
         });
     }
 
-    [HttpPost]
+    [HttpPost("resetpasssword")]
     public async Task<IActionResult> ResetPassword(ResetPasswordVM vm)
     {
         if (!ModelState.IsValid)
