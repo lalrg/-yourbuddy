@@ -1,5 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using YourBuddyPull.API.ViewModels.Common;
+using YourBuddyPull.API.ViewModels.User;
+using YourBuddyPull.Application.UseCases.Commands.Users.DisableUser;
+using YourBuddyPull.Application.UseCases.Commands.Users.RegisterUser;
+using YourBuddyPull.Application.UseCases.Commands.Users.UpdateProperties;
+using YourBuddyPull.Application.UseCases.Queries.Users.GetSingleUser;
+using YourBuddyPull.Application.UseCases.Queries.Users.GetUsersList;
 
 namespace YourBuddyPull.API.Controllers
 {
@@ -7,28 +15,102 @@ namespace YourBuddyPull.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+        private readonly IMediator _mediator;
+        public UserController(IMediator mediator)
         {
-            return Ok();
+            _mediator = mediator;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var result = await _mediator.Send(
+                    new GetSingleUserQuery()
+                    {
+                        userId = id
+                    }
+                );
+
+            return Ok(result);
         }
 
         [HttpGet]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(PaginationInfo pagination)
         {
-            return Ok();
+            if (pagination.CurrentPage < 1)
+                pagination.CurrentPage = 1;
+            if (pagination.PageSize < 5)
+                pagination.PageSize = 5;
+
+            var result = await _mediator.Send(
+                    new GetUsersListQuery()
+                    {
+                        CurrentPage = pagination.CurrentPage,
+                        PageSize = pagination.PageSize
+                    }
+                );
+
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Post(int id)
+        public async Task<IActionResult> Post(CreateUserVM vm)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest("Datos invalidos");
+
+            var result = await _mediator.Send(
+                    new RegisterCommand()
+                    {
+                        Email = vm.Email,
+                        LastName = vm.LastName,
+                        Name = vm.Name,
+                        Roles = vm.Roles
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+            
+            return Ok(result);
         }
 
-        [HttpDelete]
-        public IActionResult Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return Ok();
+            var result = await _mediator.Send(
+                    new DisableUserCommand()
+                    {
+                        userId = id
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+            
+            return Ok("Usuario deshabilitado correctamente");
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(UpdateUserVM vm)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Datos invalidos");
+
+            var result = await _mediator.Send(
+                    new UpdatePropertiesCommand()
+                    {
+                        Email = vm.Email,
+                        LastName = vm.LastName,
+                        Name = vm.Name,
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+
+            return Ok("Usuario actualizado correctamente");
+        }
+
     }
 }

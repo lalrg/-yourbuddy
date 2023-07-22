@@ -2,6 +2,6 @@
 
 public interface IEmailSender
 {
-    public Task<bool> SendResetPasswordEmail(string newPassword);
-    public Task<bool> SendAccountCreated(string user, string password);
+    public Task<bool> SendResetPasswordEmail(string email, string newPassword);
+    public Task<bool> SendAccountCreated(string email, string password);
 }

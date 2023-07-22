@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.TrainingSession;
 using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.AddTrainingSession;
+using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.UpdateTrainingSession;
 using YourBuddyPull.Application.UseCases.Queries.TrainingSessions.GetTrainingSessionsForUser;
 
 namespace YourBuddyPull.API.Controllers
@@ -60,16 +61,53 @@ namespace YourBuddyPull.API.Controllers
             return Ok("Sesion creada correctamente");
         }
 
-        [HttpGet]
-        public IActionResult GetByUserId(int userId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByUserId(Guid id, [FromQuery] PaginationInfo pagination)
         {
+            if (pagination.CurrentPage < 1)
+                pagination.CurrentPage = 1;
+            if (pagination.PageSize < 5)
+                pagination.PageSize = 5;
+
+            var result = await _mediator.Send(
+                    new GetTrainingSessionsForUserQuery()
+                    {
+                        CurrentPage= pagination.CurrentPage,
+                        PageSize = pagination.PageSize,
+                        UserId = id
+                    }
+                );
             return Ok();
         }
 
         [HttpPut]
-        public IActionResult Put(int id)
+        public async Task<IActionResult> Put(UpdateTrainingSessionVM vm)
         {
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest("Datos invalidos");
+
+            var mappedExercises = vm.exercises.Select(x => new Application.UseCases.Commands.TrainingSessions.UpdateTrainingSession.UpdatedExercise()
+            {
+                exerciseId = x.exerciseId,
+                load = x.load,
+                reps = x.reps,
+                sets = x.sets,
+            }).ToList();
+
+            var result = await _mediator.Send(
+                    new UpdateTrainingSessionCommand()
+                    {
+                        endTime = vm.endTime,
+                        exercises = mappedExercises,
+                        SessionId = vm.SessionId,
+                        startTime = vm.startTime
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+
+            return Ok("Sesion actualizada correctamente");
         }
     }
 }
