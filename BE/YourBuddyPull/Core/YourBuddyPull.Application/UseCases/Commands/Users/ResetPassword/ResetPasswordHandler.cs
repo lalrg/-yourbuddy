@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using YourBuddyPull.Application.Contracts.Data;
+using YourBuddyPull.Application.Contracts.EmailSender;
 using YourBuddyPull.Application.Contracts.Security;
 
 namespace YourBuddyPull.Application.UseCases.Commands.Users.ResetPassword;
@@ -7,11 +8,22 @@ namespace YourBuddyPull.Application.UseCases.Commands.Users.ResetPassword;
 public class ResetPasswordHandler: IRequestHandler<ResetPasswordCommand, bool>
 {
     private readonly IAuthenticationProvider _authenticationProvider;
+    private readonly IAuthenticationRepository _authenticationRepository;
     private readonly IUserRepository _userRepository;
-    public ResetPasswordHandler(IAuthenticationProvider authenticationProvider, IUserRepository userRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailSender _emailSender;
+    public ResetPasswordHandler(
+        IAuthenticationProvider authenticationProvider, 
+        IUserRepository userRepository, 
+        IAuthenticationRepository authenticationRepository,
+        IUnitOfWork unitOfWork,
+        IEmailSender emailSender)
     {
         _authenticationProvider = authenticationProvider;
         _userRepository = userRepository;
+        _authenticationRepository = authenticationRepository;
+        _unitOfWork= unitOfWork;
+        _emailSender= emailSender;
     }
 
     public async Task<bool> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
@@ -20,6 +32,17 @@ public class ResetPasswordHandler: IRequestHandler<ResetPasswordCommand, bool>
         if (user.Id == Guid.Empty)
             return false;
 
-        return await _authenticationProvider.GenerateNewPassword(user.Email);
+        var (newPassword, newSalt) = _authenticationProvider.GenerateNewRandomPasswordAndSalt();
+
+        _unitOfWork.OpenTransaction();
+        var result = await _authenticationRepository.UpdatePassword(request.UserId, newPassword, newSalt);
+        
+        if (result)
+        {
+            await _unitOfWork.CommitTransaction();
+            await _emailSender.SendResetPasswordEmail(user.Email, newPassword);
+        }
+
+        return result;
     }
 }

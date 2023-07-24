@@ -97,7 +97,7 @@ public class UserRepository : IUserRepository
         return true;
 
     }
-    private UserInformationDTO MapToUserInfoDTO(DatabaseModels.User user)
+    private static UserInformationDTO MapToUserInfoDTO(DatabaseModels.User user)
     {
         return new()
         {

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.Exercise;
@@ -65,6 +66,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
     {
         if (pagination.CurrentPage < 1)

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\YourBuddyPull.Application\YourBuddyPull.Application.csproj" />
+    <ProjectReference Include="..\YourBuddyPull.Repository.SQLServer\YourBuddyPull.Repository.SQLServer.csproj" />
   </ItemGroup>
 
 </Project>

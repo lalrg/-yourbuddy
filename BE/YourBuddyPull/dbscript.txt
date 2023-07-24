@@ -100,3 +100,41 @@ CREATE TABLE [SessionExercise] (
     FOREIGN KEY ([SessionId]) REFERENCES [Session]([Id]),
     FOREIGN KEY ([ExerciseId]) REFERENCES [Exercise]([Id])
 );
+
+
+
+-- Seed insert for Role table
+INSERT INTO [Role] ([Name])
+VALUES
+    ('admin'),
+    ('user');
+
+-- Seed insert for MeasurementUnit table
+INSERT INTO [MeasurementUnit] ([Name])
+VALUES
+    ('segundos'),
+    ('kilogramos');
+
+-- Seed insert for ExerciseType table
+INSERT INTO [ExerciseType] ([Id], [MeasurementId], [Name])
+VALUES
+    (1, 2, 'weight'),   -- MeasurementId 2 corresponds to 'kilogramos'
+    (2, 1, 'time');     -- MeasurementId 1 corresponds to 'segundos'
+
+
+
+-- Get the RoleId for the 'admin' role
+DECLARE @AdminRoleId int = (SELECT [Id] FROM [Role] WHERE [Name] = 'admin');
+
+-- Get the generated UserId for the inserted user
+DECLARE @UserId UNIQUEIDENTIFIER = NEWID();
+
+-- Seed insert for User table, update it if you want an initial user different than this
+-- Then you can hit the reset password endpoint with the given id
+INSERT INTO [User] ([Id], [Name], [LastName], [Email], [IsDeleted])
+VALUES (@UserId, 'Luis', 'Richmond', 'mail@mail.mail', 0);
+
+
+-- Seed insert for UserRole table
+INSERT INTO [UserRole] ([UserId], [RoleId])
+VALUES (@UserId, @AdminRoleId);

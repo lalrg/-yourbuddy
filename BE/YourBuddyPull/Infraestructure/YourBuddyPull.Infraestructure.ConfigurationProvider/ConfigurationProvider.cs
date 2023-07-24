@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using YourBuddyPull.Application.Contracts.Configuration;
 
 namespace YourBuddyPull.Infraestructure.ConfigurationProvider;
 
@@ -19,5 +18,25 @@ public class ConfigurationProvider : Application.Contracts.Configuration.IConfig
     public string MailSenderUsername()
     {
         return _configuration.GetSection("smtpUser").Value;
+    }
+
+    public string JwtIssuer()
+    {
+        return _configuration.GetSection("JWT:issuer").Value;
+    }
+
+    public string JwtAudience()
+    {
+        return _configuration.GetSection("JWT:audience").Value;
+    }
+
+    public string JwtSecurityKey()
+    {
+        return _configuration.GetSection("JWT:key").Value;
+    }
+
+    public string JwtLifespanInMinutes()
+    {
+        return _configuration.GetSection("JWT:lifespanInMinutes").Value;
     }
 }

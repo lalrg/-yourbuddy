@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.User;
@@ -35,7 +36,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(PaginationInfo pagination)
+        public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
                 pagination.CurrentPage = 1;
