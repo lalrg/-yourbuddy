@@ -5,9 +5,9 @@ namespace YourBuddyPull.API.ViewModels.User;
 public class UpdateUserVM
 {
     [Required]
-    public string Name;
+    public string Name { get; set; }
     [Required]
-    public string LastName;
+    public string LastName { get; set; }
     [Required, EmailAddress]
-    public string Email;
+    public string Email { get; set; }
 }

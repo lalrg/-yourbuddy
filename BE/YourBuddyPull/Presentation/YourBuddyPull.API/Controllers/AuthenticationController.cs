@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Authentication;
@@ -40,6 +41,7 @@ public class AuthenticationController : ControllerBase
         });
     }
 
+    [Authorize(Roles ="admin")]
     [HttpPost("resetpasssword")]
     public async Task<IActionResult> ResetPassword(ResetPasswordVM vm)
     {

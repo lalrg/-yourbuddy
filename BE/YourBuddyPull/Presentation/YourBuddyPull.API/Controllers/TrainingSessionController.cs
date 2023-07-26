@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Common;
@@ -19,6 +20,7 @@ namespace YourBuddyPull.API.Controllers
             _mediator = mediator;
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination, [FromQuery]Guid userId)
         {
             if (pagination.CurrentPage < 1)
@@ -39,6 +41,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post(CreateTrainingSessionVM vm)
         {
             if (!ModelState.IsValid)
@@ -62,6 +65,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetByUserId(Guid id, [FromQuery] PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
@@ -81,6 +85,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> Put(UpdateTrainingSessionVM vm)
         {
             if (!ModelState.IsValid)

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using YourBuddyPull.API.ViewModels.Common;
@@ -25,7 +26,8 @@ namespace YourBuddyPull.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet] 
+        [HttpGet]
+        [Authorize(Roles = "admin")] 
         public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
@@ -45,6 +47,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet("GetByUserId/{id}")]
+        [Authorize]
         public async Task<IActionResult> Get(Guid id, [FromQuery] PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
@@ -64,6 +67,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> Post(AddRoutineVM vm)
         {
             if (!ModelState.IsValid)
@@ -86,6 +90,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost("Duplicate")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Post(Guid id)
         {
             var currentUserId = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "id").Value ?? "";
@@ -105,6 +110,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost("AddExercise")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> AddExercise(AddExerciseVM vm)
         {
             if (!ModelState.IsValid)
@@ -128,6 +134,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost("AssignToUser")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> AssignToUser(AssignToUserVM vm)
         {
             if (!ModelState.IsValid)
@@ -147,6 +154,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost("RemoveExercise")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RemoveExercise(RemoveExerciseVM vm)
         {
             if (!ModelState.IsValid)
@@ -167,6 +175,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost("Unassign")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Unassign([FromBody]Guid id)
         {
             var result = await _mediator.Send(
@@ -183,6 +192,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _mediator.Send(

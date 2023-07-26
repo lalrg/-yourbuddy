@@ -5,11 +5,11 @@ namespace YourBuddyPull.API.ViewModels.User;
 public class CreateUserVM
 {
     [Required]
-    public string Name;
+    public string Name { get; set; }
     [Required]
-    public string LastName;
+    public string LastName { get; set; }
     [Required, EmailAddress]
-    public string Email;
+    public string Email { get; set; }
     [Required]
-    public List<string> Roles;
+    public List<string> Roles { get; set; }
 }

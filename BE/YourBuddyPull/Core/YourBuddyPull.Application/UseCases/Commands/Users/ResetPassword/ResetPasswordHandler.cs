@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using System.Text;
+using XSystem.Security.Cryptography;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.Contracts.EmailSender;
 using YourBuddyPull.Application.Contracts.Security;
@@ -34,8 +36,10 @@ public class ResetPasswordHandler: IRequestHandler<ResetPasswordCommand, bool>
 
         var (newPassword, newSalt) = _authenticationProvider.GenerateNewRandomPasswordAndSalt();
 
+        var newHash = GenerateHash(newPassword, newSalt);
+
         _unitOfWork.OpenTransaction();
-        var result = await _authenticationRepository.UpdatePassword(request.UserId, newPassword, newSalt);
+        var result = await _authenticationRepository.UpdatePassword(request.UserId, newHash, newSalt);
         
         if (result)
         {
@@ -44,5 +48,13 @@ public class ResetPasswordHandler: IRequestHandler<ResetPasswordCommand, bool>
         }
 
         return result;
+    }
+
+    private string GenerateHash(string input, string salt)
+    {
+        byte[] bytes = Encoding.UTF8.GetBytes(input + salt);
+        SHA256Managed sHA256ManagedString = new SHA256Managed();
+        byte[] hash = sHA256ManagedString.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
     }
 }

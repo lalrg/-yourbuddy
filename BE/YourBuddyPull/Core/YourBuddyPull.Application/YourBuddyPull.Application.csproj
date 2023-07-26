@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.1.0" />
     <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="XAct.Core.PCL" Version="0.0.5014" />
   </ItemGroup>
 
   <ItemGroup>

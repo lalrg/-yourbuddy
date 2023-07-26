@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> Get(Guid id)
         {
             var result = await _mediator.Send(
@@ -36,6 +38,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
@@ -55,6 +58,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Post(CreateUserVM vm)
         {
             if (!ModelState.IsValid)
@@ -77,6 +81,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _mediator.Send(
@@ -93,6 +98,7 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> Put(UpdateUserVM vm)
         {
             if (!ModelState.IsValid)

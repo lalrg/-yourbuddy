@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -47,7 +48,7 @@ public class AuthenticationProvider : IAuthenticationProvider
         var password = CreatePassword(10);
         var salt = CreateSalt(50);
 
-        return (password, salt.ToString());
+        return (password, salt);
     }
 
     private string CreatePassword(int length)
@@ -61,15 +62,12 @@ public class AuthenticationProvider : IAuthenticationProvider
         }
         return res.ToString();
     }
-
-    private static byte[] CreateSalt(int maximumSaltLength)
+    private string CreateSalt(int size)
     {
-        var salt = new byte[maximumSaltLength];
-        using (var random = new RNGCryptoServiceProvider())
-        {
-            random.GetNonZeroBytes(salt);
-        }
-
-        return salt;
+        //Generate a cryptographic random number.
+        RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        byte[] buff = new byte[size];
+        rng.GetBytes(buff);
+        return Convert.ToBase64String(buff);
     }
 }

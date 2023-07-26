@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Text;
 using YourBuddyPull.Application.Contracts.Security;
 
 namespace YourBuddyPull.Repository.SQLServer.Repositories;
@@ -16,21 +15,27 @@ public class AuthenticationRepository : IAuthenticationRepository
     {
         var user = await _context.Users.SingleAsync(user => user.Id == userId);
 
-        return (user.PasswordHash.ToString(), user.PasswordSalt.ToString());
+        var stringSalt = user.PasswordSalt;
+        var stringPasswordHash = user.PasswordHash;
+
+        return (stringPasswordHash, stringSalt);
     }
 
     public async Task<(string, string)> GetHashAndSaltByEmail(string email)
     {
         var user = await _context.Users.SingleAsync(user => user.Email == email);
 
-        return (user.PasswordHash.ToString(), user.PasswordSalt.ToString());
+        var stringSalt = user.PasswordSalt;
+        var stringPasswordHash = user.PasswordHash;
+
+        return (stringPasswordHash, stringSalt);
     }
 
     public async Task<bool> UpdatePassword(Guid userId, string password, string salt)
     {
         var user = await _context.Users.SingleAsync(user => user.Id == userId);
-        user.PasswordSalt = Encoding.ASCII.GetBytes(salt);
-        user.PasswordHash = Encoding.ASCII.GetBytes(password);
+        user.PasswordSalt = salt;
+        user.PasswordHash = password;
 
         _context.Entry(user).State = EntityState.Modified;
 

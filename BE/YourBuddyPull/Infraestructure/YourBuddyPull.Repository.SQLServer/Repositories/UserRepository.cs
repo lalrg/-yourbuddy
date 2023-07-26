@@ -51,7 +51,7 @@ public class UserRepository : IUserRepository
     public async Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination)
     {
         var itemsToSkip = (pagination.CurrentPage - 1) * pagination.PageSize;
-        var baseQuery = _context.Users.AsNoTracking();
+        var baseQuery = _context.Users.Include(u=>u.Roles).AsNoTracking();
 
         var count = await baseQuery.CountAsync();
 
@@ -69,17 +69,17 @@ public class UserRepository : IUserRepository
 
     public async Task<UserInformationDTO> GetUserPropertiesByGuid(Guid userId)
     {
-        return MapToUserInfoDTO( await _context.Users.SingleAsync(x=> x.Id == userId) );
+        return MapToUserInfoDTO( await _context.Users.Include(u=>u.Roles).SingleAsync(x=> x.Id == userId) );
     }
 
     public async Task<UserInformationDTO> GetUserPropertiesByUsername(string username)
     {
-        return MapToUserInfoDTO(await _context.Users.SingleAsync(x => x.Email == username));
+        return MapToUserInfoDTO(await _context.Users.Include(u => u.Roles).SingleAsync(x => x.Email == username));
     }
 
     public async Task<bool> UpdateRoles(Domain.Users.User user)
     {
-        var persistanceUser = await _context.Users.SingleAsync(x=> x.Id == user.Id);
+        var persistanceUser = await _context.Users.Include(u => u.Roles).SingleAsync(x=> x.Id == user.Id);
         persistanceUser.Roles = await _context.Roles.Where(x => user.Roles.Any(r => r.Name == x.Name)).ToListAsync();
 
         _context.Entry(persistanceUser).State = EntityState.Modified;

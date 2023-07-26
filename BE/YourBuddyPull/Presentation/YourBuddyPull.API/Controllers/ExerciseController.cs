@@ -22,6 +22,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles ="admin")]
     public async Task<IActionResult> Post(AddExerciseVM vm)
     {
         if (!ModelState.IsValid)
@@ -43,6 +44,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> EditExercise(Guid id, EditExerciseVM vm)
     {
         if (!ModelState.IsValid)
@@ -66,7 +68,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
+    [Authorize(Roles ="admin")]
     public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
     {
         if (pagination.CurrentPage < 1)
@@ -84,6 +86,7 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> Get(Guid id)
     {
         if (id == Guid.Empty)

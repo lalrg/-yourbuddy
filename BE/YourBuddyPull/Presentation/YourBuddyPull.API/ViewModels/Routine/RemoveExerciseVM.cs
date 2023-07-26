@@ -5,7 +5,7 @@ namespace YourBuddyPull.API.ViewModels.Routine;
 public class RemoveExerciseVM
 {
     [Required]
-    public Guid exerciseId;
+    public Guid exerciseId { get; set; }
     [Required]
-    public Guid routineId;
+    public Guid routineId { get; set; }
 }

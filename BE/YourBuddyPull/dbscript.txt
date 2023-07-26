@@ -132,9 +132,21 @@ DECLARE @UserId UNIQUEIDENTIFIER = NEWID();
 -- Seed insert for User table, update it if you want an initial user different than this
 -- Then you can hit the reset password endpoint with the given id
 INSERT INTO [User] ([Id], [Name], [LastName], [Email], [IsDeleted])
-VALUES (@UserId, 'Luis', 'Richmond', 'mail@mail.mail', 0);
+VALUES (@UserId, 'Luis', 'Richmond', 'lalrg@outlook.com', 0);
 
 
 -- Seed insert for UserRole table
 INSERT INTO [UserRole] ([UserId], [RoleId])
 VALUES (@UserId, @AdminRoleId);
+
+ALTER TABLE [dbo].[User]
+DROP COLUMN [PasswordSalt];
+
+ALTER TABLE [dbo].[User]
+ADD [PasswordSalt] nvarchar(max) NULL;
+
+ALTER TABLE [dbo].[User]
+DROP COLUMN [PasswordHash];
+
+ALTER TABLE [dbo].[User]
+ADD [PasswordHash] nvarchar(max) NULL;
