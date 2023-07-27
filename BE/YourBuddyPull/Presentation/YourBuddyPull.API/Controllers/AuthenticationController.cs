@@ -41,7 +41,7 @@ public class AuthenticationController : ControllerBase
         });
     }
 
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles = "admin")]
     [HttpPost("resetpasssword")]
     public async Task<IActionResult> ResetPassword(ResetPasswordVM vm)
     {

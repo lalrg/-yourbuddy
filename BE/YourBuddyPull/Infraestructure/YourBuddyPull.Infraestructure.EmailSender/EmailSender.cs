@@ -13,15 +13,15 @@ public class EmailSender : IEmailSender
     }
     public async Task<bool> SendAccountCreated(string email, string password)
     {
-        return await SendMail(email, MessageBuilder.BuildAccountCreatedMessage(email, password));
+        return await SendPlainMail(email, MessageBuilder.BuildAccountCreatedMessage(email, password));
     }
 
     public async Task<bool> SendResetPasswordEmail(string email, string newPassword)
     {
-        return await SendMail(email, MessageBuilder.BuildResetPasswordEmail(email, newPassword));
+        return await SendPlainMail(email, MessageBuilder.BuildResetPasswordEmail(email, newPassword));
     }
 
-    private Task<bool> SendMail(string email, string message)
+    private Task<bool> SendPlainMail(string email, string message)
     {
         string addressFrom = _configurationProvider.MailSenderUsername();
         string passwordFrom = _configurationProvider.MailSenderPassword();
@@ -43,6 +43,11 @@ public class EmailSender : IEmailSender
 
         return Task.FromResult(true);
     }
+
+    public async Task SendMail(string email, string text)
+    {
+        await SendPlainMail(email, text);
+    }
 }
 
 internal static class MessageBuilder
@@ -53,6 +58,6 @@ internal static class MessageBuilder
     }
     public static string BuildResetPasswordEmail(string email, string newPassword)
     {
-        return $@"Se ha actualizado su Email para YourBuddy. Contraseña: {newPassword}";
+        return $@"Se ha actualizado su contraseña para YourBuddy. Contraseña: {newPassword}";
     }
 }

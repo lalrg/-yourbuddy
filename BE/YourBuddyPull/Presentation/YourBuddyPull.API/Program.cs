@@ -1,5 +1,7 @@
 using MediatR;
+using MediatR.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -7,6 +9,7 @@ using YourBuddyPull.Application.Contracts.Configuration;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.Contracts.EmailSender;
 using YourBuddyPull.Application.Contracts.Security;
+using YourBuddyPull.Application.ExceptionHandling;
 using YourBuddyPull.Infraestructure.AuthenticationProvider;
 using YourBuddyPull.Infraestructure.EmailSender;
 using YourBuddyPull.Repository.SQLServer;
@@ -39,6 +42,8 @@ builder.Services.AddMediatR(cfg =>
      cfg.RegisterServicesFromAssembly(typeof(IMediator).Assembly));
 builder.Services.AddMediatR(cfg =>
      cfg.RegisterServicesFromAssembly(typeof(IExerciseRepository).Assembly));
+
+builder.Services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
 
 builder.Services.AddCors(options =>
 {
@@ -89,6 +94,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseExceptionHandler(c => c.Run(async context =>
+{
+    var exception = context.Features
+        .Get<IExceptionHandlerPathFeature>()
+        .Error;
+    var response = new { error = exception.Message };
+    await context.Response.WriteAsJsonAsync(response);
+}));
 
 app.MapControllers();
 
