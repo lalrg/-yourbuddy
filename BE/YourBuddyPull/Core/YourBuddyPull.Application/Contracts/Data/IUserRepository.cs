@@ -12,6 +12,7 @@ public interface IUserRepository
     Task<bool> DeactivateUser(User user);
     Task<UserInformationDTO> GetUserPropertiesByGuid(Guid userId);
     Task<UserInformationDTO> GetUserPropertiesByUsername(string username);
+    Task<UserInformationDTO?> TryGetUserPropertiesByUsername(string username);
     Task<List<UserInformationDTO>> GetAllUsers();
     Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination);
 }

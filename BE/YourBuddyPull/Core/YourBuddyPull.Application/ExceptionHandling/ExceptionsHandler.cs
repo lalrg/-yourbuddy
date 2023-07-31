@@ -27,10 +27,10 @@ public class ExceptionLoggingHandler<TRequest, TResponse, TException> : IRequest
 
         try
         {
-            _emailSender.SendMail(_configurationProvider.MailSenderUsername(), "Ha ocurrido un error inesperado en la aplicacion");
+            // _emailSender.SendMail(_configurationProvider.MailSenderUsername(), "Ha ocurrido un error inesperado en la aplicacion");
         }
         catch {}
 
-        throw new ApplicationException("Ha ocurrido un error no controlado.");
+        throw new ApplicationException(exception.Message);
     }
 }

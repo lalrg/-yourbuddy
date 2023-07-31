@@ -109,4 +109,15 @@ public class UserRepository : IUserRepository
             Roles = user.Roles.Select(x=>x.Name).ToList()
         };
     }
+
+    public async Task<UserInformationDTO?> TryGetUserPropertiesByUsername(string username)
+    {
+        var user = await _context.Users.Include(u => u.Roles).SingleOrDefaultAsync(x => x.Email == username);
+
+        if(user == null)
+        {
+            return null;
+        }
+        return MapToUserInfoDTO(user);
+    }
 }

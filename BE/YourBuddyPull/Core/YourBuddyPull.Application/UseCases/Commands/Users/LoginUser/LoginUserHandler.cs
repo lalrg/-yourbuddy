@@ -3,6 +3,7 @@ using System.Text;
 using XSystem.Security.Cryptography;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.Contracts.Security;
+using YourBuddyPull.Application.DTOs.User;
 
 namespace YourBuddyPull.Application.UseCases.Commands.Users.LoginUser;
 
@@ -24,7 +25,13 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, string?>
 
     public async Task<string?> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var userInfo = await _userRepository.GetUserPropertiesByUsername(request.Email);
+        var user = await _userRepository.TryGetUserPropertiesByUsername(request.Email);
+        if(user == null)
+        {
+            return null;
+        }
+
+        var userInfo = (UserInformationDTO)user;
         var name = $"{userInfo.Name} {userInfo.LastName}";
         var (hash, salt) = await _authenticationRepository.GetHashAndSalt(userInfo.Id);
 

@@ -19,7 +19,7 @@ public class AuthenticationController : ControllerBase
         _mediator = mediator;
     }
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginVM vm)
+    public async Task<IActionResult> Login([FromBody]LoginVM vm)
     {
         if(!ModelState.IsValid)
         {
