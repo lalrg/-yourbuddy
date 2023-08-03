@@ -51,7 +51,7 @@ public class UserRepository : IUserRepository
     public async Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination)
     {
         var itemsToSkip = (pagination.CurrentPage - 1) * pagination.PageSize;
-        var baseQuery = _context.Users.Include(u=>u.Roles).AsNoTracking();
+        var baseQuery = _context.Users.Where(u => !(u.IsDeleted ?? false)).Include(u=>u.Roles).AsNoTracking();
 
         var count = await baseQuery.CountAsync();
 

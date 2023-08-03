@@ -1,42 +1,30 @@
 import React from 'react';
 import { Table } from 'antd';
 import { columns } from './columnDefinition'
+import { UserInformation } from '../../../shared/types/userInformation';
 
-export interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
+type props = {
+  data?: Array<UserInformation>;
+  currentPage?: number;
+  totalItems?: number;
+  itemsPerPage?: number;
+  onChange?: (currentPage: number, pageSize: number) => void;
 }
 
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
 
-const Grid: React.FC = () => {
+const Grid: React.FC<props> = ({ data, currentPage, totalItems, itemsPerPage, onChange }) => {
   return (
-    <Table columns={columns} dataSource={data} />
+    <Table 
+      columns={columns} 
+      dataSource={data}
+      rowKey="id"
+      pagination={{
+        current: currentPage ?? 1,
+        total: totalItems ?? data?.length,
+        pageSize: itemsPerPage ?? 10,
+        showTotal: (total, range) => `Mostrando del ${range[0]} al ${range[1]} de ${total} usuarios`,
+        onChange: onChange
+      }} />
   )
 };
 

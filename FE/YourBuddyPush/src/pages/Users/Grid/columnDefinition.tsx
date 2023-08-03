@@ -1,54 +1,47 @@
 import { ColumnsType } from "antd/es/table";
-import { DataType } from ".";
-import { Space, Tag } from "antd";
+import { Popconfirm, Space } from "antd";
+import { UserInformation } from "../../../shared/types/userInformation";
+import { Link } from "react-router-dom";
 
-const columns: ColumnsType<DataType> = [
+const UserActions = (user: UserInformation) => {
+  return(
+    <Space key={user.id}>
+      <Link to={`/users/${user.id}`}>Editar</Link>
+      <Popconfirm
+        title="Eliminar Usuario"
+        description="Al aceptar, el usuario sera eliminado del sistema"
+        okText="Si"
+        cancelText="No"
+        onConfirm={() => user?.onDelete ? user?.onDelete(user.id) : null}
+      >
+        <a>Eliminar</a>
+      </Popconfirm>
+    </Space>
+  )
+}
+
+const columns: ColumnsType<UserInformation> = [
   {
-    title: 'Name',
+    title: 'Nombre',
     dataIndex: 'name',
     key: 'name',
-    render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: 'Apellido',
+    dataIndex: 'lastName',
+    key: 'lastName',
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: 'Correo Electronico',
+    dataIndex: 'email',
+    key: 'email',
+    responsive: ['lg'],
   },
   {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (_, { tags }) => (
-      <>
-        {tags.map((tag) => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-  {
-    title: 'Action',
+    title: 'Acciones',
     key: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
+    render: (_, u) => UserActions(u)
+  }
 ];
 
 

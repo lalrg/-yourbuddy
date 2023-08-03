@@ -24,7 +24,7 @@ const AppLayout: React.FC<Props> = ({children}) => {
         <Content className='mainContent'>
           {children}
         </Content>
-        <Footer style={{ textAlign: 'center' }}>{`YourBuddy App ©${new Date().getFullYear()} Created with ♥️ by Luis Richmond`}</Footer>
+        <Footer style={{ textAlign: 'center' }}>{`YourBuddy App ©${new Date().getFullYear()} Made with ♥️ by Luis Richmond`}</Footer>
       </Layout>
     </Layout>
   );

@@ -32,7 +32,8 @@ public class DisableUserHandler : IRequestHandler<DisableUserCommand, bool>
 
         _unitOfWork.OpenTransaction();
         domainUser.SetAsDeleted();
-        _unitOfWork.CommitTransaction();
+        await _userRepository.DeactivateUser(domainUser);
+        await _unitOfWork.CommitTransaction();
 
         return true;
     }

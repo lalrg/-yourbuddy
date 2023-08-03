@@ -1,0 +1,10 @@
+.userEditButton {
+  text-align: center;
+}
+
+
+@media only screen and (max-width: 600px) { 
+  .userEditButton {
+    margin-bottom: 1rem;
+  }
+}

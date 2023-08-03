@@ -7,13 +7,14 @@ namespace YourBuddyPull.Domain.Users;
 
 public sealed class User : BaseEntity
 {
-    private User(Guid id, string name, string lastName, string email)
+    private User(Guid id, string name, string lastName, string email, List<Role> roles)
     {
         Id = id;
         Name = name;
         LastName = lastName;
         Email = email;
         IsDeleted = false;
+        _roles = roles;
     }
     private string _name = string.Empty;
     public string Name { get => _name; private set
@@ -60,18 +61,19 @@ public sealed class User : BaseEntity
     }
     public bool IsDeleted
     {
-        get => IsDeleted; private set
+        get => _isDeleted; private set
         {
-            if (value)
+            if (_isDeleted)
             {
                 throw new DomainValidationException("The user is already deleted");
             }
             else
             {
-                IsDeleted = value;
+                _isDeleted = value;
             }
         }
     }
+    private bool _isDeleted = false;
     private List<Role> _roles { get; set; } = new();
     public IReadOnlyCollection<Role> Roles
     {
@@ -86,10 +88,7 @@ public sealed class User : BaseEntity
         if (roles is null)
             throw new DomainValidationException("You cannot instanciate an user without roles");
 
-        User user = new(id, name, lastName, email)
-        {
-            _roles = roles
-        };
+        User user = new(id, name, lastName, email, roles);
 
         return user;
     }
@@ -99,10 +98,7 @@ public sealed class User : BaseEntity
         if (roles is null)
             throw new DomainValidationException("You cannot create an user without roles");
 
-        User user = new(Guid.NewGuid(), name, lastName, email)
-        {
-            _roles = roles
-        };
+        User user = new(Guid.NewGuid(), name, lastName, email, roles);
 
         return user;
     }

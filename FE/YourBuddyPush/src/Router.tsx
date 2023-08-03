@@ -1,14 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { useJWT } from './hooks/useJWT';
 import LoginPage from './pages/LoginPage';
 import { useAuthStore } from './store/authStore';
 import Users from './pages/Users';
+import UserEdit from './pages/UserEdit';
 
 const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
     element: () => <Users/>,
     path: '/users',
+    role: 'admin'
+  },
+  {
+    element: () => <UserEdit />,
+    path: '/users/:id',
     role: 'admin'
   },
   {
