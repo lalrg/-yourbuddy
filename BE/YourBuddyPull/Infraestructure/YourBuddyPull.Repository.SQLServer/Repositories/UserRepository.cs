@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.DTOs.Shared;
 using YourBuddyPull.Application.DTOs.User;
@@ -14,8 +15,9 @@ public class UserRepository : IUserRepository
     {
         _context = context;
     }
-    public async Task<bool> CreateUser(Domain.Users.User user)
+    public async Task<bool> CreateUser(Domain.Users.User user, string? password = null, string? salt = null)
     {
+        var roleName = user.Roles.First().Name;
         var persistenceUser = new DatabaseModels.User()
         {
             Id = user.Id,
@@ -23,9 +25,9 @@ public class UserRepository : IUserRepository
             IsDeleted = false,
             LastName = user.LastName,
             Name = user.Name,
-            PasswordHash = null,
-            PasswordSalt = null,
-            Roles = await _context.Roles.Where(x=> user.Roles.Any(r => r.Name == x.Name)).ToListAsync()
+            PasswordHash = password,
+            PasswordSalt = salt,
+            Roles = await _context.Roles.Where(x=> roleName == x.Name).ToListAsync()
         };
 
         _context.Users.Add(persistenceUser);
@@ -92,6 +94,9 @@ public class UserRepository : IUserRepository
         persistenceUser.Email = user.Email;
         persistenceUser.LastName = user.LastName;
         persistenceUser.Name = user.Name;
+
+        var newRole = user.Roles.First().Name;
+        persistenceUser.Roles = _context.Roles.Where(r => r.Name == newRole).ToList();
         
         _context.Entry(persistenceUser).State = EntityState.Modified;
         return true;
@@ -119,5 +124,15 @@ public class UserRepository : IUserRepository
             return null;
         }
         return MapToUserInfoDTO(user);
+    }
+
+    public async Task<bool> UserExists(string email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if(user == null)
+        {
+            return false;
+        }
+        return true;
     }
 }

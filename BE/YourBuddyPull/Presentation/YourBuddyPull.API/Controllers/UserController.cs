@@ -70,7 +70,7 @@ namespace YourBuddyPull.API.Controllers
                         Email = vm.Email,
                         LastName = vm.LastName,
                         Name = vm.Name,
-                        Roles = vm.Roles
+                        Role = vm.Role
                     }
                 );
 
@@ -97,9 +97,9 @@ namespace YourBuddyPull.API.Controllers
             return Ok("Usuario deshabilitado correctamente");
         }
 
-        [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> Put(UpdateUserVM vm)
+        [HttpPut("{id}")]
+        [Authorize(Roles ="admin")]
+        public async Task<IActionResult> Put(Guid Id, UpdateUserVM vm)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Datos invalidos");
@@ -107,9 +107,11 @@ namespace YourBuddyPull.API.Controllers
             var result = await _mediator.Send(
                     new UpdatePropertiesCommand()
                     {
+                        Id = Id,
                         Email = vm.Email,
                         LastName = vm.LastName,
                         Name = vm.Name,
+                        Role = vm.Role
                     }
                 );
 

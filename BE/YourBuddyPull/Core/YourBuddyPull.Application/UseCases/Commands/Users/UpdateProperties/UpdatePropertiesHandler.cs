@@ -15,7 +15,7 @@ public class UpdatePropertiesHandler : IRequestHandler<UpdatePropertiesCommand, 
     }
     public async Task<bool> Handle(UpdatePropertiesCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserPropertiesByUsername(request.Email);
+        var user = await _userRepository.GetUserPropertiesByGuid(request.Id);
         var userRoles = user.Roles.Select(Role.Instanciate).ToList();
 
         var domainUser = User.Instanciate(
@@ -27,9 +27,16 @@ public class UpdatePropertiesHandler : IRequestHandler<UpdatePropertiesCommand, 
             userRoles);
 
         _unitOfWork.OpenTransaction();
-        domainUser.UpdateProperties(user.Name, user.LastName, user.Email);
-        _unitOfWork.CommitTransaction();
+        domainUser.UpdateProperties(request.Name, request.LastName, request.Email);
+        var existingRole = domainUser.Roles.First();
 
-        return await _userRepository.UpdateUserProperties(domainUser);
+        if (existingRole.Name != request.Role) {
+            domainUser.AddRole(Role.Instanciate(request.Role));
+            domainUser.RemoveRole(existingRole);
+        }
+        var result = await _userRepository.UpdateUserProperties(domainUser);
+        await _unitOfWork.CommitTransaction();
+
+        return result;
     }
 }

@@ -6,7 +6,7 @@ namespace YourBuddyPull.Application.Contracts.Data;
 
 public interface IUserRepository
 {
-    Task<bool> CreateUser(User user);
+    Task<bool> CreateUser(User user, string password, string salt);
     Task<bool> UpdateRoles(User user);
     Task<bool> UpdateUserProperties(User user);
     Task<bool> DeactivateUser(User user);
@@ -14,5 +14,6 @@ public interface IUserRepository
     Task<UserInformationDTO> GetUserPropertiesByUsername(string username);
     Task<UserInformationDTO?> TryGetUserPropertiesByUsername(string username);
     Task<List<UserInformationDTO>> GetAllUsers();
+    Task<bool> UserExists(string email);
     Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination);
 }

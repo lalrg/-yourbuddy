@@ -3,6 +3,7 @@ import { LOCALSTORAGE_TOKEN_KEY } from "../shared/constants";
 
 const myAxios = axios;
 const token = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
+
 if(token) {
   myAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }

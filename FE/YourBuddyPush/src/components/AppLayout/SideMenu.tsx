@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import { useJWT } from '../../hooks/useJWT';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
 
 type MenuOptionsType = {
   icon: any;
@@ -22,7 +23,7 @@ type MenuOptionsType = {
 const SideMenu: React.FC = () => {
   const { LogOut } = useJWT();
   const navigate = useNavigate();
-
+  const { userInfo } = useAuthStore();
   const MenuOptions: Array<MenuOptionsType> = [
     {
       icon: UserOutlined,
@@ -58,7 +59,7 @@ const SideMenu: React.FC = () => {
       icon: FireOutlined,
       text: 'Mis Sesiones',
       onClick: ()=> navigate('/mysessions'),
-      role: 'admin'
+      role: 'user'
     },
     {
       icon: SettingOutlined,
@@ -87,7 +88,7 @@ const SideMenu: React.FC = () => {
         items={
           MenuOptions
           .filter(
-            e=> e
+            e=> e.role == 'user' || e.role == userInfo?.roles
           )
           .map(
           (opt) => ({

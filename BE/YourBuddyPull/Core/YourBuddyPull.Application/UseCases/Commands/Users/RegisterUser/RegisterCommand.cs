@@ -7,5 +7,5 @@ public class RegisterCommand: IRequest<bool>
     public string Name;
     public string LastName;
     public string Email;
-    public List<string> Roles;
+    public string Role;
 }

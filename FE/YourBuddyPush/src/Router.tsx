@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import { useAuthStore } from './store/authStore';
 import Users from './pages/Users';
 import UserEdit from './pages/UserEdit';
+import UserCreate from './pages/UserCreate';
+import Exercises from './pages/Exercises';
 
 const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
@@ -18,7 +20,12 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
     role: 'admin'
   },
   {
-    element: () => <h2>exercises 😁</h2>,
+    element: () => <UserCreate />,
+    path: '/users/create',
+    role: 'admin'
+  },
+  {
+    element: () => <Exercises />,
     path: '/exercises',
     role: 'admin'
   },
@@ -28,18 +35,18 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
     role: 'admin'
   },
   {
-    element: () => <h2>routines 😁</h2>,
-    path: '/routines',
-    role: 'admin'
+    element: () => <h2>My routines 😁</h2>,
+    path: '/myroutines',
+    role: 'user'
   },
   {
     element: () => <h2>sessions 😁</h2>,
     path: '/sessions',
-    role: 'user'
+    role: 'admin'
   },
   {
-    element: () => <h2>My routines 😁</h2>,
-    path: '/myroutines',
+    element: () => <h2>my sessions 😁</h2>,
+    path: '/mysessions',
     role: 'user'
   },
   {
@@ -50,11 +57,6 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
     element: () => <h2>Settings 😁</h2>,
     path: '/settings',
-    role: 'user'
-  },
-  {
-    element: () => <h2>my sessions 😁</h2>,
-    path: '/mysessions',
     role: 'user'
   },
   {

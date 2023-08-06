@@ -1,8 +1,8 @@
-import { Button, Col, Form, Input, Row, Spin } from 'antd';
+import { Button, Col, Form, Input, Row, Select, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserInformation } from '../../shared/types/userInformation';
-import { GetSingleUser } from '../../serverCalls/users';
+import { GetSingleUser, UpdateUser } from '../../serverCalls/users';
 import { LeftOutlined, CheckOutlined } from '@ant-design/icons';
 import './styles.css';
 
@@ -12,6 +12,7 @@ const UserEdit: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserInformation>();
   const [form] = Form.useForm();
+  const { Option } = Select;
 
   useEffect(
     () => {
@@ -21,17 +22,28 @@ const UserEdit: React.FC = () => {
       GetSingleUser(id)
         .then(
           r=> {
-            setUserData(r.data)
-            console.log(userData)
+            setUserData(r.data);
+            form.setFieldsValue({
+              email: r.data.email,
+              lastname: r.data.lastName,
+              name: r.data.name,
+              role: r.data.roles[0]
+            });
           }
         )
         .finally(
-          () => setLoading(false)
+          () => {
+            setLoading(false);
+          }
         );
     },
-    [id, userData]
+    [id, setUserData, setLoading, form, navigate]
   );
-  
+  const onFinish = async (values: { email: string, name: string, lastname: string, role: string }) => {
+    await UpdateUser(id ?? '', values.name, values.lastname, values.email, values.role);
+    navigate('/users');
+  };
+
   return (
     <Spin spinning={loading} delay={0}> 
       <h2 style={{textAlign:'center'}}>Editar usuario {userData?.email ?? id}</h2>
@@ -43,13 +55,32 @@ const UserEdit: React.FC = () => {
         wrapperCol={{ flex: 1 }}
         colon={false}
         form={form}
+        onFinish={onFinish}
       >
-        <Form.Item label="Normal label" name="username" rules={[{ required: true, message: 'Este campo es requerido' }]}>
+        <Form.Item label="Correo Electronico" name="email" 
+          rules={[
+            { required: true, message: 'Este campo es requerido' }, 
+            { type:"email", message: 'Debe ingresar un email valido' }
+          ]}
+        >
           <Input />
         </Form.Item>
 
-        <Form.Item label="A super long label text" name="password" rules={[{ required: true, message: 'Este campo es requerido' }]}>
+        <Form.Item label="Nombre" name="name" rules={[{ required: true, message: 'Este campo es requerido' }]}>
           <Input />
+        </Form.Item>
+
+        <Form.Item label="Apellido" name="lastname" rules={[{ required: true, message: 'Este campo es requerido' }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item name="role" label="Rol" rules={[{ required: true, message: 'Debe seleccionar un rol' }]}>
+          <Select
+            placeholder="Seleccione un rol"
+          >
+            <Option value="admin">Administrador</Option>
+            <Option value="user">Usuario</Option>
+          </Select>
         </Form.Item>
 
         <Form.Item label=" ">
