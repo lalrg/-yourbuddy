@@ -1,46 +1,39 @@
 import { ColumnsType } from "antd/es/table";
-import { Popconfirm, Space } from "antd";
-import { UserInformation } from "../../../shared/types/userInformation";
+import { Space } from "antd";
 import { Link } from "react-router-dom";
+import { ExerciseInformation } from "../../../shared/types/exerciseInformation";
 
-const UserActions = (user: UserInformation) => {
+const ExerciseActions = (exercise: ExerciseInformation) => {
   return(
-    <Space key={user.id}>
-      <Link to={`/users/${user.id}`}>Editar</Link>
-      <Popconfirm
-        title="Eliminar Usuario"
-        description="Al aceptar, el usuario sera eliminado del sistema"
-        okText="Si"
-        cancelText="No"
-        onConfirm={() => user?.onDelete ? user?.onDelete(user.id) : null}
-      >
-        <a>Eliminar</a>
-      </Popconfirm>
+    <Space key={exercise.exerciseId}>
+      <Link to={`/exercises/${exercise.exerciseId}`}>Editar</Link>
     </Space>
   )
 }
 
-const columns: ColumnsType<UserInformation> = [
+const columns: ColumnsType<ExerciseInformation> = [
   {
     title: 'Nombre',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: 'Apellido',
-    dataIndex: 'lastName',
-    key: 'lastName',
+    title: 'Descripcion',
+    dataIndex: 'description',
+    key: 'description',
+    responsive: ['lg'],
   },
   {
-    title: 'Correo Electronico',
+    title: 'Tipo',
     dataIndex: 'email',
     key: 'email',
     responsive: ['lg'],
+    render: (_, e) => e.type == "time" ? "Tiempo" : "Peso"
   },
   {
     title: 'Acciones',
     key: 'action',
-    render: (_, u) => UserActions(u)
+    render: (_, u) => ExerciseActions(u)
   }
 ];
 

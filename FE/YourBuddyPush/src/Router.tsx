@@ -50,7 +50,7 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
     role: 'user'
   },
   {
-    element: () => <h2>My routines 😁</h2>,
+    element: () => <h2>Home page 😁</h2>,
     path: '/',
     role: 'user'
   },

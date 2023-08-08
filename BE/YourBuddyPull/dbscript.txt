@@ -150,3 +150,18 @@ DROP COLUMN [PasswordHash];
 
 ALTER TABLE [dbo].[User]
 ADD [PasswordHash] nvarchar(max) NULL;
+
+
+-- Seed insert for Exercise table with random exercises
+INSERT INTO [Exercise] ([Id], [TypeId], [Name], [Description], [ImageUrl], [VideoURL])
+VALUES
+    (NEWID(), 1, 'Levantamiento de Pesas', 'Ejercicio para fortalecer músculos.', '', ''),
+    (NEWID(), 1, 'Flexiones', 'Ejercicio para trabajar los pectorales.', '', ''),
+    (NEWID(), 2, 'Plancha', 'Ejercicio para fortalecer el core.', '', ''),
+    (NEWID(), 2, 'Sentadillas', 'Ejercicio para tonificar piernas y glúteos.', '', ''),
+    (NEWID(), 1, 'Press de Banca', 'Ejercicio para trabajar los pectorales y tríceps.', '', ''),
+    (NEWID(), 2, 'Abdominales', 'Ejercicio para fortalecer los abdominales.', '', ''),
+    (NEWID(), 1, 'Curl de Bíceps', 'Ejercicio para trabajar los bíceps.', '', ''),
+    (NEWID(), 2, 'Zancadas', 'Ejercicio para tonificar piernas y glúteos.', '', ''),
+    (NEWID(), 1, 'Dominadas', 'Ejercicio para fortalecer la espalda y bíceps.', '', ''),
+    (NEWID(), 2, 'Mountain Climbers', 'Ejercicio para trabajar el core y cardiovascular.', '', '');

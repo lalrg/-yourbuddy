@@ -1,10 +1,10 @@
 import React from 'react';
 import { Table } from 'antd';
 import { columns } from './columnDefinition'
-import { UserInformation } from '../../../shared/types/userInformation';
+import { ExerciseInformation } from '../../../shared/types/exerciseInformation';
 
 type props = {
-  data?: Array<UserInformation>;
+  data?: Array<ExerciseInformation>;
   currentPage?: number;
   totalItems?: number;
   itemsPerPage?: number;

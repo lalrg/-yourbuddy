@@ -1,3 +1,4 @@
+import { updateToken } from '../serverCalls/ServerCallsBase';
 import { LOCALSTORAGE_TOKEN_KEY } from '../shared/constants'
 import { decodeToken } from '../shared/security';
 import { useAuthStore } from '../store/authStore';
@@ -14,6 +15,7 @@ export const useJWT: useJWTType = () => {
   const LogOut = () => {
     localStorage.removeItem(LOCALSTORAGE_TOKEN_KEY);
     logout();
+    updateToken();
   }
 
   if(userInfo) { return { isLoggedIn: true, LogOut } }

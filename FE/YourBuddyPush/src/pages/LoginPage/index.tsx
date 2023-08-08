@@ -4,6 +4,7 @@ import { Login } from '../../serverCalls/login';
 import { useAuthStore } from '../../store/authStore';
 import { LOCALSTORAGE_TOKEN_KEY } from '../../shared/constants';
 import { decodeToken } from '../../shared/security';
+import { updateToken } from '../../serverCalls/ServerCallsBase';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuthStore();
@@ -16,6 +17,7 @@ const LoginPage: React.FC = () => {
       localStorage.setItem(LOCALSTORAGE_TOKEN_KEY, v.data.token);
 
       login(jsonParsed.email, jsonParsed.name, jsonParsed.roles, jsonParsed.exp, v.data.token);
+      updateToken();
     }).finally(()=>setLoading(false))
   };
 

@@ -1,7 +1,7 @@
-import { deleteBase, getBase, postBase, putBase } from './ServerCallsBase';
+import { GetPaginated, deleteBase, getBase, postBase, putBase } from './ServerCallsBase';
 import { BaseUrl } from './constants';
 
-const GetUsersList = async (pagesize: number, currentpage: number) => {
+const GetUsersList: GetPaginated = async (pagesize: number, currentpage: number) => {
   return await getBase(`${BaseUrl}user?pageSize=${pagesize}&currentPage=${currentpage}`);
 }
 
