@@ -16,7 +16,7 @@ public class ExerciseRepository : IExerciseRepository
     }
     public async Task<bool> Create(Domain.Exercises.Exercise exercise)
     {
-        var exerciseType = await _context.ExerciseTypes.AsNoTracking().SingleAsync(x=> x.Name == exercise.ExerciseName);
+        var exerciseType = await _context.ExerciseTypes.SingleAsync(x=> x.Name.ToLower() == exercise.ExerciseType.TypeOfExerciseName.ToLower());
         var persistenceExercise = new DatabaseModels.Exercise()
         {
             Id = exercise.ExerciseId,

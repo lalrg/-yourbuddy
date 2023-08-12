@@ -43,39 +43,39 @@ public sealed class Exercise
     private Guid _exerciseId { get; set; }
     public string ExerciseName
     {
-        get => _exerciseName; set
+        get => _exerciseName; private set
         {
             if (string.IsNullOrEmpty(value))
                 throw new DomainValidationException("the name of the exercise cannot be null");
+            _exerciseName = value;
         }
     }
-    private string _exerciseName { get; set; } = string.Empty;
+    private string _exerciseName { get; set; }
     public string ExerciseDescription
     {
-        get => _exerciseDescription; set
+        get => _exerciseDescription; private set
         {
             if (string.IsNullOrEmpty(value))
                 throw new DomainValidationException("the description of the exercise cannot be null");
+            _exerciseDescription = value;
         }
     }
-    private string _exerciseDescription { get; set; } = string.Empty;
+    private string _exerciseDescription { get; set; }
     public string VideoURL
     {
-        get => _videoURL; set
+        get => _videoURL; private set
         {
-            if (string.IsNullOrEmpty(value))
-                throw new DomainValidationException("the videoURL of the exercise cannot be null");
+            _videoURL = value;
         }
     }
-    private string _videoURL { get; set; } = string.Empty;
+    private string _videoURL { get; set; }
     public string ImageUrl
     {
-        get => _imageUrl; set
+        get => _imageUrl; private set
         {
-            if (string.IsNullOrEmpty(value))
-                throw new DomainValidationException("the description of the exercise cannot be null");
+            _imageUrl = value;
         }
     }
-    private string _imageUrl { get; set; } = string.Empty;
+    private string _imageUrl { get; set; }
     public ExerciseType ExerciseType { get; private set; }
 }

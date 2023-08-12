@@ -92,12 +92,12 @@ public class ExerciseController : ControllerBase
         if (id == Guid.Empty)
             return BadRequest("Solicitud no valida");
 
-        var result = _mediator.Send(new GetSingleExerciseQuery()
+        var result = await _mediator.Send(new GetSingleExerciseQuery()
         {
             ExerciseId = id
         });
 
-        if (result == null)
+        if (result.ExerciseId == Guid.Empty)
             return BadRequest("Ha ocurrido un error con la solicitud");
 
         return Ok(result);

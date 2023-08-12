@@ -1,0 +1,9 @@
+.EditButton {
+  text-align: center;
+}
+
+@media only screen and (max-width: 600px) { 
+  .EditButton {
+    margin-bottom: 1rem;
+  }
+}

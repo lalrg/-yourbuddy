@@ -7,6 +7,8 @@ import Users from './pages/Users';
 import UserEdit from './pages/UserEdit';
 import UserCreate from './pages/UserCreate';
 import Exercises from './pages/Exercises';
+import ExerciseCreate from './pages/ExerciseCreate';
+import ExerciseEdit from './pages/ExerciseEdit';
 
 const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
@@ -27,6 +29,16 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
     element: () => <Exercises />,
     path: '/exercises',
+    role: 'admin'
+  },
+  {
+    element: () => <ExerciseCreate />,
+    path: '/exercises/Create',
+    role: 'admin'
+  },
+  {
+    element: () => <ExerciseEdit />,
+    path: '/exercises/:id',
     role: 'admin'
   },
   {
