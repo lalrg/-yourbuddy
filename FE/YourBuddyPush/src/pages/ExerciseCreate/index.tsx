@@ -48,10 +48,6 @@ const ExerciseCreate: React.FC = () => {
           <Input />
         </Form.Item>
 
-        <Form.Item label="URL del video" name="videoUrl" rules={[{ required: true, message: 'Este campo es requerido' }]}>
-          <Input />
-        </Form.Item>
-
         <Form.Item name="type" label="Tipo de ejercicio" rules={[{ required: true, message: 'Debe seleccionar un tipo de ejercicio' }]}>
           <Select
             placeholder="Seleccione un tipo"

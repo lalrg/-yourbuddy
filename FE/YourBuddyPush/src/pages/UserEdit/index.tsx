@@ -2,7 +2,7 @@ import { Button, Col, Form, Input, Row, Select, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserInformation } from '../../shared/types/userInformation';
-import { GetSingleUser, UpdateUser } from '../../serverCalls/users';
+import { GetSingleUser, ResetPassword, UpdateUser } from '../../serverCalls/users';
 import { LeftOutlined, CheckOutlined } from '@ant-design/icons';
 import './styles.css';
 
@@ -39,10 +39,19 @@ const UserEdit: React.FC = () => {
     },
     [id, setUserData, setLoading, form, navigate]
   );
+
   const onFinish = async (values: { email: string, name: string, lastname: string, role: string }) => {
     await UpdateUser(id ?? '', values.name, values.lastname, values.email, values.role);
     navigate('/users');
   };
+
+  const resetPassword = async () => {
+    setLoading(true);
+    await ResetPassword(id ?? "");
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }
 
   return (
     <Spin spinning={loading} delay={0}> 
@@ -83,6 +92,11 @@ const UserEdit: React.FC = () => {
           </Select>
         </Form.Item>
 
+        <Col xs={24} md={12} className='userEditButton'>
+          <Button type='default' onClick={resetPassword}>
+            Resetear contraseña
+          </Button>
+        </Col>
         <Form.Item label=" ">
           <Row gutter={64} justify={'center'}>
             <Col xs={24} md={12} className='userEditButton'>

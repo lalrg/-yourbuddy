@@ -53,10 +53,10 @@ public sealed class ExecutedExercise
         {
             switch (ExerciseType.TypeOfExercise) {
                 case TypeOfExercise.MeasuredByTime:
-                    return $"{Sets} series of {Load} {ExerciseType.MeasurementUnit}";
+                    return $"{Sets} series de {Load} {ExerciseType.MeasurementUnit}";
 
                 case TypeOfExercise.MeasuredByWeight:
-                    return $"{Sets} series of {Reps} reps with {Load} {ExerciseType.MeasurementUnit}";
+                    return $"{Sets} series de {Reps} reps con {Load} {ExerciseType.MeasurementUnit}";
 
                 default:
                     return string.Empty; // this case will never happen

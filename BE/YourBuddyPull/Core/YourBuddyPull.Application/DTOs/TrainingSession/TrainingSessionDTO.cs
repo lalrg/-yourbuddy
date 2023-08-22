@@ -7,5 +7,6 @@
         public DateTime EndTime;
         public Guid CreatedById;
         public string CreatedByName;
+        public List<ExerciseTrainingSessionInformationDTO> ExerciseTrainingSessions;
     }
 }

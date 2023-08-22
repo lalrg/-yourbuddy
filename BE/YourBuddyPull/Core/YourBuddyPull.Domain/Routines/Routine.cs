@@ -7,13 +7,14 @@ namespace YourBuddyPull.Domain.Routines;
 
 public sealed class Routine: BaseEntity
 {
-    private Routine(Guid id, string name, CreatedBy createdBy, DateTime createdDate, bool isEnabled)
+    private Routine(Guid id, string name, CreatedBy createdBy, DateTime createdDate, bool isEnabled, List<PlannedExercise> plannedExercises)
     {
         Id = id;
         Name = name;
         CreatedBy = createdBy;
         CreatedDate = createdDate;
         IsEnabled = isEnabled;
+        _plannedExercises = plannedExercises == null ? new List<PlannedExercise>() : plannedExercises;
     }
 
     public static Routine Create(string name, CreatedBy createdBy)
@@ -23,18 +24,31 @@ public sealed class Routine: BaseEntity
             name,
             createdBy,
             DateTime.Now,
-            true
+            true,
+            new List<PlannedExercise>()
             );
     }
-
-    public static Routine Instanciate(Guid Id ,string name, CreatedBy createdBy, bool isEnabled)
+    public static Routine Instanciate(Guid Id, string name, CreatedBy createdBy, bool isEnabled)
     {
         return new Routine(
             Id,
             name,
             createdBy,
             DateTime.Now,
-            isEnabled
+            isEnabled,
+            new List<PlannedExercise>()
+            );
+    }
+
+    public static Routine Instanciate(Guid Id ,string name, CreatedBy createdBy, bool isEnabled, List<PlannedExercise> plannedExercises)
+    {
+        return new Routine(
+            Id,
+            name,
+            createdBy,
+            DateTime.Now,
+            isEnabled,
+            plannedExercises
             );
     }
 

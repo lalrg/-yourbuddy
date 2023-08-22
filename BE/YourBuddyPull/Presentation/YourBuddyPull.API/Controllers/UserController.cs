@@ -8,6 +8,7 @@ using YourBuddyPull.API.ViewModels.User;
 using YourBuddyPull.Application.UseCases.Commands.Users.DisableUser;
 using YourBuddyPull.Application.UseCases.Commands.Users.RegisterUser;
 using YourBuddyPull.Application.UseCases.Commands.Users.UpdateProperties;
+using YourBuddyPull.Application.UseCases.Queries.Users.GetAllUsers;
 using YourBuddyPull.Application.UseCases.Queries.Users.GetSingleUser;
 using YourBuddyPull.Application.UseCases.Queries.Users.GetUsersList;
 
@@ -34,6 +35,14 @@ namespace YourBuddyPull.API.Controllers
                     }
                 );
 
+            return Ok(result);
+        }
+
+        [HttpGet("getAll")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _mediator.Send(new GetAllUsersQuery());
             return Ok(result);
         }
 

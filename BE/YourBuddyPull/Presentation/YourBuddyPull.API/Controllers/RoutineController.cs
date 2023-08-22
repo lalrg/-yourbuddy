@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.Routine;
 using YourBuddyPull.Application.UseCases.Commands.Routines.AddExerciseToRoutine;
 using YourBuddyPull.Application.UseCases.Commands.Routines.AssignUserToRoutine;
+using YourBuddyPull.Application.UseCases.Commands.Routines.ChangeNameToRoutine;
 using YourBuddyPull.Application.UseCases.Commands.Routines.CreateRoutine;
 using YourBuddyPull.Application.UseCases.Commands.Routines.DeactivateRoutine;
 using YourBuddyPull.Application.UseCases.Commands.Routines.DuplicateRoutine;
@@ -13,6 +16,7 @@ using YourBuddyPull.Application.UseCases.Commands.Routines.RemoveExerciseFromRou
 using YourBuddyPull.Application.UseCases.Commands.Routines.UnassignUserToRoutine;
 using YourBuddyPull.Application.UseCases.Queries.Routines.GetAllRoutines;
 using YourBuddyPull.Application.UseCases.Queries.Routines.GetRoutinesForUser;
+using YourBuddyPull.Application.UseCases.Queries.Routines.GetSingleRoutine;
 
 namespace YourBuddyPull.API.Controllers
 {
@@ -27,8 +31,8 @@ namespace YourBuddyPull.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")] 
-        public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Get([FromQuery] PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
                 pagination.CurrentPage = 1;
@@ -38,29 +42,44 @@ namespace YourBuddyPull.API.Controllers
             var result = await _mediator.Send(
                 new GetRoutinesListQuery()
                 {
-                     CurrentPage = pagination.CurrentPage,
-                     PageSize = pagination.PageSize,
+                    CurrentPage = pagination.CurrentPage,
+                    PageSize = pagination.PageSize,
                 }
                 );
 
             return Ok(result);
         }
 
-        [HttpGet("GetByUserId/{id}")]
+        [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+
+            var result = await _mediator.Send(
+                new GetSingleRoutineQuery()
+                {
+                    RoutineId = id
+                }
+                );
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetByUserId")]
         [Authorize]
-        public async Task<IActionResult> Get(Guid id, [FromQuery] PaginationInfo pagination)
+        public async Task<IActionResult> GetByuserId([FromQuery] PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
                 pagination.CurrentPage = 1;
             if (pagination.PageSize < 5)
                 pagination.PageSize = 5;
 
-            var result = _mediator.Send(
+            var result = await _mediator.Send(
                 new GetRoutinesForUserQuery()
                 {
                     CurrentPage = pagination.CurrentPage,
                     PageSize = pagination.PageSize,
-                    userId = id
+                    userId = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value)
                 });
 
             return Ok(result);
@@ -76,37 +95,33 @@ namespace YourBuddyPull.API.Controllers
             var result = await _mediator.Send(
                     new CreateRoutineCommand()
                     {
-                        CreatedById = vm.CreatedById,
-                        createdByName = vm.createdByName,
+                        CreatedById = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value),
+                        createdByName = User.Claims.First(u => u.Type == ClaimTypes.Name).Value,
                         Name = vm.Name
                     }
                 );
-            if(!result)
+            if(result == Guid.Empty)
             {
                 return BadRequest("Ocurrio un error al intentar crear la rutina");
             }
 
-            return Ok("Rutina creada correctamente");
+            return Ok(result);
         }
 
         [HttpPost("Duplicate")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Post(Guid id)
+        public async Task<IActionResult> Post([FromBody]DuplicateRoutineVM vm)
         {
-            var currentUserId = HttpContext.User.Claims.SingleOrDefault(x => x.Type == "id").Value ?? "";
+            var currentUserId = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value);
             var result = await _mediator.Send(
                     new DuplicateRoutineCommand()
                     {
-                        CreatedBy = Guid.Parse(currentUserId),
-                        Id = id,
+                        CreatedBy = currentUserId,
+                        Id = vm.id,
                     }
                 );
 
-            return Ok(new
-            {
-                message= "Rutina creada exitosamente",
-                guid= result
-            });
+            return Ok(result);
         }
 
         [HttpPost("AddExercise")]
@@ -174,23 +189,6 @@ namespace YourBuddyPull.API.Controllers
             return Ok("Ejercicio removido correctamente");
         }
 
-        [HttpPost("Unassign")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Unassign([FromBody]Guid id)
-        {
-            var result = await _mediator.Send(
-                    new UnassignUserToRoutineCommand()
-                    {
-                        RoutineId = id
-                    }
-                );
-
-            if (!result)
-                return BadRequest("Ha ocurrido un error");
-
-            return Ok("La runtina se encuentra ahora sin asignar");
-        }
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(Guid id)
@@ -205,6 +203,23 @@ namespace YourBuddyPull.API.Controllers
                 return BadRequest("Ha ocurrido un error");
 
             return Ok("La rutina ha sido desactivada correctamente");
+        }
+
+        [HttpPost("updateName")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> UpdateName(UpdateNameToRoutineVM vm)
+        {
+            var result = await _mediator.Send(
+                    new ChangeNameToRoutineCommand()
+                    {
+                        Id = vm.Id,
+                        Name = vm.Name,
+                    });
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+
+            return Ok("La rutina ha sido actualizada correctamente");
         }
     }
 }

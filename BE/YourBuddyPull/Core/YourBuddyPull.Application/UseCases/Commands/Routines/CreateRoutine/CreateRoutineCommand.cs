@@ -2,7 +2,7 @@
 
 namespace YourBuddyPull.Application.UseCases.Commands.Routines.CreateRoutine;
 
-public class CreateRoutineCommand : IRequest<bool>
+public class CreateRoutineCommand : IRequest<Guid>
 {
     public string Name { get; set; }
     public Guid CreatedById { get; set; }

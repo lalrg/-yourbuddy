@@ -26,7 +26,7 @@ public class AddTrainingSessionHandler : IRequestHandler<AddTrainingSessionComma
         var result = await _trainingSessionRepository.Create(domainTrainingSession);
         var routineFrom = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineFrom);
 
-        routineFrom.Execises.ForEach(
+        routineFrom.Exercises.ForEach(
             e=>
             {
                 domainTrainingSession.AddExercise(

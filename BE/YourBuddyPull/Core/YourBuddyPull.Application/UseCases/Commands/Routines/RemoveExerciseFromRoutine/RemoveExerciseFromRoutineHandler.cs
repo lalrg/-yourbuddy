@@ -20,25 +20,43 @@ public class RemoveExerciseFromRoutineHandler : IRequestHandler<RemoveExerciseFr
     public async Task<bool> Handle(RemoveExerciseFromRoutineCommand request, CancellationToken cancellationToken)
     {
         var persistenceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
-        var domainRoutine = Routine.Instanciate(persistenceRoutine.Id, persistenceRoutine.CreatedByName, CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName), persistenceRoutine.isEnabled);
+        var domainRoutine = Routine.Instanciate(
+            persistenceRoutine.Id, 
+            persistenceRoutine.CreatedByName, 
+            CreatedBy.Instanciate(persistenceRoutine.CreatedBy, 
+            persistenceRoutine.CreatedByName), 
+            persistenceRoutine.isEnabled,
+            persistenceRoutine.Exercises.Select(e => PlannedExercise.Instanciate(
+                    e.ExerciseId,
+                    e.Name,
+                    e.Reps,
+                    e.Sets,
+                    e.Load,
+                    new ExerciseType(MapExerciseType(e.Type))
+            )).ToList());
 
         var persistenceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
         var plannedExercise = domainRoutine.PlannedExercises.Single(e => e.ExerciseId == request.ExerciseId);
 
-        var domainExercise = PlannedExercise.Instanciate(
-            plannedExercise.ExerciseId,
-            plannedExercise.ExerciseName,
-            plannedExercise.Reps,
-            plannedExercise.Sets,
-            plannedExercise.Load,
-            plannedExercise.ExerciseType);
-
-        domainRoutine.RemoveExercise(domainExercise);
+        domainRoutine.RemoveExercise(plannedExercise);
 
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.UpdateExercisesForRoutine(domainRoutine);
         await _unitOfWork.CommitTransaction();
 
         return result;
+    }
+
+    private TypeOfExercise MapExerciseType(string exerciseType)
+    {
+        switch (exerciseType.ToLower())
+        {
+            case "time":
+                return TypeOfExercise.MeasuredByTime;
+            case "weight":
+                return TypeOfExercise.MeasuredByWeight;
+            default:
+                return TypeOfExercise.MeasuredByWeight;
+        }
     }
 }

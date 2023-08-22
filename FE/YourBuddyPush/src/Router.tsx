@@ -9,6 +9,12 @@ import UserCreate from './pages/UserCreate';
 import Exercises from './pages/Exercises';
 import ExerciseCreate from './pages/ExerciseCreate';
 import ExerciseEdit from './pages/ExerciseEdit';
+import Routines from './pages/Routines';
+import RoutineCreate from './pages/RoutineCreate';
+import RoutineViewEdit from './pages/RoutineViewEdit';
+import ForgotPasswordComponent from './pages/ForgotPassword';
+import UpdatePassword from './pages/UpdatePassword';
+import MySessions from './pages/MySessions';
 
 const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
@@ -42,32 +48,37 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
     role: 'admin'
   },
   {
-    element: () => <h2>routines 😁</h2>,
+    element: () => <Routines type='all'/>,
     path: '/routines',
     role: 'admin'
   },
   {
-    element: () => <h2>My routines 😁</h2>,
+    element: () => <RoutineCreate />,
+    path: '/routines/create',
+    role: 'admin'
+  },
+  {
+    element: () => <RoutineViewEdit />,
+    path: '/routines/:id',
+    role: 'admin'
+  },
+  {
+    element: () => <Routines type='mine' />,
     path: '/myroutines',
     role: 'user'
   },
   {
-    element: () => <h2>sessions 😁</h2>,
-    path: '/sessions',
-    role: 'admin'
-  },
-  {
-    element: () => <h2>my sessions 😁</h2>,
+    element: () => <MySessions />,
     path: '/mysessions',
     role: 'user'
   },
   {
-    element: () => <h2>Home page 😁</h2>,
+    element: () => <Routines type='mine' />,
     path: '/',
     role: 'user'
   },
   {
-    element: () => <h2>Settings 😁</h2>,
+    element: () => <UpdatePassword />,
     path: '/settings',
     role: 'user'
   },
@@ -102,6 +113,7 @@ const Router: React.FC = ()=>{
   if (!isLoggedIn) {
     return (
       <Routes>
+        <Route path="/forgotpassword" element={<ForgotPasswordComponent />} />
         <Route path="*" element={<LoginPage/>} />
       </Routes>
     )

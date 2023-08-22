@@ -21,7 +21,16 @@ public class AssignRoutineHandler : IRequestHandler<AssignUserToRoutineCommand, 
         var domainRoutine = Routine.Instanciate(
             persistenceRoutine.Id,
             persistenceRoutine.Name,
-            CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName), persistenceRoutine.isEnabled);
+            CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName), 
+            persistenceRoutine.isEnabled,
+            persistenceRoutine.Exercises.Select(e => PlannedExercise.Instanciate(
+                    e.ExerciseId,
+                    e.Name,
+                    e.Reps,
+                    e.Sets,
+                    e.Load,
+                    new ExerciseType(MapExerciseType(e.Type))
+            )).ToList());
 
         domainRoutine.AssignToUser(request.UserId);
 
@@ -30,5 +39,18 @@ public class AssignRoutineHandler : IRequestHandler<AssignUserToRoutineCommand, 
         await _unitOfWork.CommitTransaction();
 
         return result;
+    }
+
+    private TypeOfExercise MapExerciseType(string exerciseType)
+    {
+        switch (exerciseType.ToLower())
+        {
+            case "time":
+                return TypeOfExercise.MeasuredByTime;
+            case "weight":
+                return TypeOfExercise.MeasuredByWeight;
+            default:
+                return TypeOfExercise.MeasuredByWeight;
+        }
     }
 }

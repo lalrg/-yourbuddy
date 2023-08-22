@@ -39,10 +39,20 @@ public class ExerciseRepository : IExerciseRepository
         return true;
     }
 
-    public Task<List<ExerciseDTO>> GetAll()
+    public async Task<List<ExerciseDTO>> GetAll()
     {
-        // not used for now
-        throw new NotImplementedException();
+        var items = await _context.Exercises.Include(x => x.Type).AsNoTracking().ToListAsync();
+        var mappedItems = items.Select(x => new ExerciseDTO()
+        {
+            Description = x.Description,
+            ExerciseId = x.Id,
+            ImageUrl = x.ImageUrl,
+            Name = x.Name,
+            VideoUrl = x.VideoUrl,
+            Type = x.Type.Name
+        }).ToList();
+
+        return mappedItems;
     }
 
     public async Task<PaginationResultDTO<ExerciseDTO>> GetAllPaged(PaginationDTO pagination)

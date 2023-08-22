@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -16,12 +14,13 @@ public class AuthenticationProvider : IAuthenticationProvider
     {
         _configurationProvider = configurationProvider;
     }
-    public string GenerateJWT(string email, string name, List<string> roles)
+    public string GenerateJWT(string email, string name, Guid id, List<string> roles)
     {
         var claims = new Claim[]
         {
-            new(JwtRegisteredClaimNames.Email, email),
-            new (JwtRegisteredClaimNames.Name, name),
+            new(ClaimTypes.Email, email),
+            new (ClaimTypes.Name, name),
+            new(ClaimTypes.NameIdentifier, id.ToString()),
             new("roles", string.Join(',',roles))
         };
 

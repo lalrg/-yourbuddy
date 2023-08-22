@@ -29,17 +29,16 @@ public class TrainingSessionRepository : ITrainingSessionRepository
         return Task.FromResult(true);
     }
 
-    public async Task<List<TrainingSessionDTO>> GetAllForUser(Guid UserId)
-    {
-        // not used for now
-        throw new NotImplementedException();
-    }
-
     public async Task<PaginationResultDTO<TrainingSessionDTO>> GetAllPagedForUser(PaginationDTO pagination, Guid UserId)
     {
         var itemsToSkip = (pagination.CurrentPage - 1) * pagination.PageSize;
         var baseQuery = _context.Sessions
-            .Where(x => x.CreatedBy == UserId);
+            .Where(x => x.CreatedBy == UserId)
+            .Include(x => x.SessionExercises)
+            .ThenInclude(x => x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement);
+
         var totalCount = baseQuery.Count();
 
         var items = await baseQuery
@@ -52,7 +51,8 @@ public class TrainingSessionRepository : ITrainingSessionRepository
                 CreatedByName = x.CreatedByNavigation.Name,
                 EndTime = (DateTime)x.EndTime,
                 Id = x.Id,
-                StartTime = (DateTime)x.StartTime
+                StartTime = (DateTime)x.StartTime,
+                ExerciseTrainingSessions = MapSessionExercisesToDTO(x.SessionExercises.ToList())
             }).ToListAsync();
 
         return new PaginationResultDTO<TrainingSessionDTO>()
@@ -117,36 +117,32 @@ public class TrainingSessionRepository : ITrainingSessionRepository
         return Task.FromResult(true);
     }
 
-    private List<ExerciseTrainingSessionInformationDTO> MapSessionExercisesToDTO(List<SessionExercise> sessionExercises)
+    private static List<ExerciseTrainingSessionInformationDTO> MapSessionExercisesToDTO(List<SessionExercise> sessionExercises)
     {
         return sessionExercises.Select(
             x=> new ExerciseTrainingSessionInformationDTO()
             {
                 Description = x.Exercise.Description,
                 ExerciseId = x.Exercise.Id,
-                ImageUrl = x.Exercise.ImageUrl,
                 Load = (int)x.Load,
                 Name = x.Exercise.Name,
                 Reps = (int)x.Reps,
                 Sets = (int)x.Sets,
                 SetsDescription = GetExerciseDescription(x),
-                VideoUrl = x.Exercise.VideoUrl,
             }).ToList();
     }
 
-    private TrainingSessionDetailDTO MapToDetailDTO(Session persistenceSession)
+    private static TrainingSessionDetailDTO MapToDetailDTO(Session persistenceSession)
     {
         var MappedExercises = persistenceSession.SessionExercises.Select(
             x=> new ExerciseTrainingSessionInformationDTO() {
                 Description = x.Exercise.Description,
                 ExerciseId = x.Exercise.Id,
-                ImageUrl = x.Exercise.ImageUrl,
                 Load = (int)x.Load,
                 Name = x.Exercise.Name,
                 Reps = (int)x.Reps,
                 Sets = (int)x.Sets,
                 SetsDescription = GetExerciseDescription(x),
-                VideoUrl = x.Exercise.VideoUrl
             });
 
         return new()
@@ -160,15 +156,15 @@ public class TrainingSessionRepository : ITrainingSessionRepository
         };
     }
 
-    private string GetExerciseDescription(SessionExercise exercise)
+    private static string GetExerciseDescription(SessionExercise exercise)
     {
         switch (exercise.Exercise.Type.Name.ToLower())
         {
             case "time":
-                return $"{exercise.Sets} series of {exercise.Load} {exercise.Exercise.Type.Measurement}";
+                return $"{exercise.Sets} series de {exercise.Load} {exercise.Exercise.Type.Measurement}";
 
             case "weight":
-                return $"{exercise.Sets} series of {exercise.Reps} reps with {exercise.Load} {exercise.Exercise.Type.Measurement.Name}";
+                return $"{exercise.Sets} series de {exercise.Reps} reps con {exercise.Load} {exercise.Exercise.Type.Measurement.Name}";
 
             default:
                 return string.Empty; // this case will never happen

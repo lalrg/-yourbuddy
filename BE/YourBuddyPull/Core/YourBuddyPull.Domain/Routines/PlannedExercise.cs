@@ -18,10 +18,6 @@ public sealed class PlannedExercise
     {
         return new PlannedExercise(Id, exerciseName, reps, sets, load, exerciseType);
     }
-    public static PlannedExercise Create(string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
-    {
-        return new PlannedExercise(Guid.NewGuid(), exerciseName, reps, sets, load, exerciseType);
-    }
     public Guid ExerciseId
     {
         get => _exerciseId; set
@@ -56,8 +52,6 @@ public sealed class PlannedExercise
     {
         get => _load; set
         {
-            if (value < 1)
-                throw new DomainValidationException("The value must be more than 0");
             _load = value;
         }
     }
@@ -69,10 +63,10 @@ public sealed class PlannedExercise
             switch (ExerciseType.TypeOfExercise)
             {
                 case TypeOfExercise.MeasuredByTime:
-                    return $"{Sets} series of {Load} {ExerciseType.MeasurementUnit}";
+                    return $"{Sets} series de {Load} {ExerciseType.MeasurementUnit}";
 
                 case TypeOfExercise.MeasuredByWeight:
-                    return $"{Sets} series of {Reps} reps with {Load} {ExerciseType.MeasurementUnit}";
+                    return $"{Sets} series de {Reps} reps con {Load} {ExerciseType.MeasurementUnit}";
 
                 default:
                     return string.Empty; // this case will never happen

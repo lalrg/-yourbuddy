@@ -7,14 +7,14 @@ using YourBuddyPull.Application.Contracts.Security;
 
 namespace YourBuddyPull.Application.UseCases.Commands.Users.ResetPassword;
 
-public class ResetPasswordHandler: IRequestHandler<ResetPasswordCommand, bool>
+public class ResetPasswordByEmailHandler: IRequestHandler<ResetPasswordCommand, bool>
 {
     private readonly IAuthenticationProvider _authenticationProvider;
     private readonly IAuthenticationRepository _authenticationRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailSender _emailSender;
-    public ResetPasswordHandler(
+    public ResetPasswordByEmailHandler(
         IAuthenticationProvider authenticationProvider, 
         IUserRepository userRepository, 
         IAuthenticationRepository authenticationRepository,

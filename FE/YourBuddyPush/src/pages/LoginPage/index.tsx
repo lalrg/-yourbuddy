@@ -5,10 +5,12 @@ import { useAuthStore } from '../../store/authStore';
 import { LOCALSTORAGE_TOKEN_KEY } from '../../shared/constants';
 import { decodeToken } from '../../shared/security';
 import { updateToken } from '../../serverCalls/ServerCallsBase';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = (values: any) => {
     setLoading(true);
@@ -50,6 +52,7 @@ const LoginPage: React.FC = () => {
           Acceder
         </Button>
       </Form.Item>
+      <a onClick={()=>navigate('/forgotpassword')}>Olvido su contraseña?</a>
     </Form>
   </Spin>)
 };

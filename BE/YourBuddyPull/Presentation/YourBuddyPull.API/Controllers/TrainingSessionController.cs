@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.TrainingSession;
 using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.AddTrainingSession;
@@ -21,19 +22,19 @@ namespace YourBuddyPull.API.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination, [FromQuery]Guid userId)
+        public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
                 pagination.CurrentPage = 1;
             if (pagination.PageSize < 5)
                 pagination.PageSize = 5;
 
-            var result = _mediator.Send(
+            var result = await _mediator.Send(
                     new GetTrainingSessionsForUserQuery()
                     {
                         CurrentPage = pagination.CurrentPage,
                         PageSize = pagination.PageSize,
-                        UserId = userId
+                        UserId = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value)
                     }
                 );
 

@@ -5,7 +5,7 @@ using YourBuddyPull.Domain.Shared.ValueObjects;
 
 namespace YourBuddyPull.Application.UseCases.Commands.Routines.CreateRoutine;
 
-public class CreateRoutineHandler : IRequestHandler<CreateRoutineCommand, bool>
+public class CreateRoutineHandler : IRequestHandler<CreateRoutineCommand, Guid>
 {
     private readonly IRoutineRepository _routineRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -15,7 +15,7 @@ public class CreateRoutineHandler : IRequestHandler<CreateRoutineCommand, bool>
         _unitOfWork = unitOfWork;
 
     }
-    public async Task<bool> Handle(CreateRoutineCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateRoutineCommand request, CancellationToken cancellationToken)
     {
         var createdByValue = CreatedBy.Instanciate(request.CreatedById, request.createdByName);
         var domainRoutine = Routine.Create(request.Name, createdByValue);
@@ -24,6 +24,6 @@ public class CreateRoutineHandler : IRequestHandler<CreateRoutineCommand, bool>
         var result = await _routineRepository.Create(domainRoutine);
         await _unitOfWork.CommitTransaction();
 
-        return result;
+        return domainRoutine.Id;
     }
 }

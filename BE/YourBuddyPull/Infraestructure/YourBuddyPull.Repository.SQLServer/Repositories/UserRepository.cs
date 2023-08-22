@@ -44,10 +44,16 @@ public class UserRepository : IUserRepository
         return true;
     }
 
-    public Task<List<UserInformationDTO>> GetAllUsers()
+    public async Task<List<UserInformationDTO>> GetAllUsers()
     {
-        // not used for now
-        throw new NotImplementedException();
+        var items = await _context
+            .Users
+            .Where(u => !(u.IsDeleted ?? false))
+            .Include(u => u.Roles)
+            .Select(u=> MapToUserInfoDTO(u))
+            .ToListAsync();
+
+        return items;
     }
 
     public async Task<PaginationResultDTO<UserInformationDTO>> GetAllUsersPaged(PaginationDTO pagination)

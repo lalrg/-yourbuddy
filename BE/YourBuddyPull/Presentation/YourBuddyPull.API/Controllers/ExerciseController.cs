@@ -5,6 +5,7 @@ using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.Exercise;
 using YourBuddyPull.Application.UseCases.Commands.Exercises.AddExercise;
 using YourBuddyPull.Application.UseCases.Commands.Exercises.EditExercise;
+using YourBuddyPull.Application.UseCases.Queries.Exercises.GetAllExercises;
 using YourBuddyPull.Application.UseCases.Queries.Exercises.GetExercisesList;
 using YourBuddyPull.Application.UseCases.Queries.Exercises.GetSingleExercise;
 
@@ -82,6 +83,14 @@ public class ExerciseController : ControllerBase
             PageSize = pagination.PageSize
         });
 
+        return Ok(result);
+    }
+
+    [HttpGet("getall")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _mediator.Send(new GetAllExercisesQuery());
         return Ok(result);
     }
 

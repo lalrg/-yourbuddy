@@ -42,7 +42,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, string?>
         if (!result)
             return null;
 
-        var token = _authProvider.GenerateJWT(request.Email, name, userInfo.Roles);
+        var token = _authProvider.GenerateJWT(request.Email, name, userInfo.Id, userInfo.Roles);
 
         return token;
     }

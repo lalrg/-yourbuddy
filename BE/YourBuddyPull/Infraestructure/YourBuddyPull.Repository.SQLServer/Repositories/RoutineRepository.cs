@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using XAct;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.DTOs.Routine;
 using YourBuddyPull.Application.DTOs.Shared;
@@ -83,6 +85,9 @@ public class RoutineRepository : IRoutineRepository
             .Routines
             .Include(x => x.CreatedByNavigation)
             .Include(x => x.ExerciseRoutines)
+            .ThenInclude(x=> x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement)
             .AsNoTracking()
             .Skip(itemsToSkip)
             .Take(pagination.PageSize)
@@ -91,9 +96,12 @@ public class RoutineRepository : IRoutineRepository
 
         var mappedItems = items.Select(x => new RoutineInformationDTO()
         {
-            CreatedBy = (Guid)x.CreatedBy,
+            CreatedBy = x.CreatedBy ?? Guid.Empty,
             CreatedByName = $"{x.CreatedByNavigation.Name} {x.CreatedByNavigation.LastName}",
-            Execises = x.ExerciseRoutines.Select(MapExercises).ToList()
+            Exercises = x.ExerciseRoutines.Select(MapExercises).ToList(),
+            Id = x.Id,
+            isEnabled = (bool)x.IsEnabled,
+            Name = x.Name
         }).ToList();
 
         return new PaginationResultDTO<RoutineInformationDTO>() { 
@@ -108,22 +116,31 @@ public class RoutineRepository : IRoutineRepository
     public async Task<PaginationResultDTO<RoutineInformationDTO>> GetAllRoutinesPagedForuser(PaginationDTO pagination, Guid userId)
     {
         var itemsToSkip = (pagination.CurrentPage - 1) * pagination.PageSize;
-        var items = await _context.Routines
+        var items = await _context
+            .Routines
+            .Where(r=> r.UserAssignedId != null && r.UserAssignedId == userId)
             .Include(x => x.CreatedByNavigation)
-            .Where(x=> x.UserAssignedId == userId)
+            .Include(x => x.ExerciseRoutines)
+            .ThenInclude(x => x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement)
             .AsNoTracking()
             .Skip(itemsToSkip)
             .Take(pagination.PageSize)
             .ToListAsync();
-        var totalCount = _context.Routines.Count();
+
+        var totalCount = _context.Routines
+            .Where(r => r.UserAssignedId != null && r.UserAssignedId == userId).Count();
 
         var mappedItems = items.Select(x => new RoutineInformationDTO()
         {
-            CreatedBy = (Guid)x.CreatedBy,
+            CreatedBy = x.CreatedBy ?? Guid.Empty,
             CreatedByName = $"{x.CreatedByNavigation.Name} {x.CreatedByNavigation.LastName}",
-            Execises = x.ExerciseRoutines.Select(MapExercises).ToList()
+            Exercises = x.ExerciseRoutines.Select(MapExercises).ToList(),
+            Id = x.Id,
+            isEnabled = (bool)x.IsEnabled,
+            Name = x.Name
         }).ToList();
-
 
         return new PaginationResultDTO<RoutineInformationDTO>()
         {
@@ -139,9 +156,12 @@ public class RoutineRepository : IRoutineRepository
     {
         var persistenceRoutine = await _context
             .Routines
-            .AsNoTracking()
+            .Include(x=>x.UserAssigned)
             .Include(x=>x.CreatedByNavigation)
             .Include(x=>x.ExerciseRoutines)
+            .ThenInclude(x => x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement)
             .SingleOrDefaultAsync(x=> x.Id == routineId);
 
         var createdByName = $"{persistenceRoutine.CreatedByNavigation.Name} {persistenceRoutine.CreatedByNavigation.LastName}";
@@ -153,13 +173,20 @@ public class RoutineRepository : IRoutineRepository
             Name = persistenceRoutine.Name,
             Id = routineId,
             isEnabled = (bool)persistenceRoutine.IsEnabled,
-            Execises = persistenceRoutine.ExerciseRoutines.Select(MapExercises).ToList()
+            Exercises = persistenceRoutine.ExerciseRoutines.Select(MapExercises).ToList(),
+            AssignedTo = persistenceRoutine.UserAssignedId ?? Guid.Empty,
+            AssignedToName = persistenceRoutine.UserAssigned?.Name + persistenceRoutine.UserAssigned?.LastName
         };
     }
 
     public async Task<bool> UpdateExercisesForRoutine(Domain.Routines.Routine routine)
     {
-        var persistenceRoutine = await _context.Routines.Include(x=>x.ExerciseRoutines).SingleAsync(x => x.Id == routine.Id);
+        var persistenceRoutine = await _context.Routines
+            .Include(x=>x.ExerciseRoutines)
+            .ThenInclude(x => x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement)
+            .SingleAsync(x => x.Id == routine.Id);
 
         var exercisesToRemove = persistenceRoutine.ExerciseRoutines
             .Where(x=> x.RoutineId == routine.Id && !routine.PlannedExercises.Any(y=>y.ExerciseId == x.ExerciseId)).ToList();
@@ -169,17 +196,42 @@ public class RoutineRepository : IRoutineRepository
         exercisesToRemove.ForEach(
             x => persistenceRoutine.ExerciseRoutines.Remove(x));
 
-        exercisesToAdd.ForEach(
-            x => persistenceRoutine.ExerciseRoutines.Add(new()
-            {
-                ExerciseId = x.ExerciseId,
-                RoutineId = routine.Id
-            })
+        var mappedExercisesToAdd = exercisesToAdd.Select(
+            x => 
+                new ExerciseRoutine() { 
+                    ExerciseId = x.ExerciseId, 
+                    RoutineId = routine.Id,
+                    Sets = x.Sets,
+                    Load = x.Load,
+                    Reps = x.Reps
+                }
             );
 
+
+        mappedExercisesToAdd.ForEach(e =>
+        {
+            var exercise = new SqlParameter("exerciseId", e.ExerciseId);
+            var routine = new SqlParameter("routineId", e.RoutineId);
+            var load = new SqlParameter("load", e.Load);
+            var reps = new SqlParameter("reps", e.Reps);
+            var sets = new SqlParameter("sets", e.Sets);
+
+            _context.Database.ExecuteSql(
+                $@"
+                INSERT INTO [ExerciseRoutine] ([ExerciseId], [RoutineId], [Load], [Reps], [Sets])
+                VALUES ({exercise}, {routine}, {load}, {reps}, {sets})
+                "
+           );
+        });
+        return true;
+    }
+
+    public async Task<bool> UpdateNameForRoutine(Domain.Routines.Routine routine, string name)
+    {
+        var persistenceRoutine = await _context.Routines.SingleAsync(r => r.Id == routine.Id);
+        persistenceRoutine.Name = name;
+
         _context.Entry(persistenceRoutine).State = EntityState.Modified;
-
-
         return true;
     }
 
@@ -196,7 +248,24 @@ public class RoutineRepository : IRoutineRepository
             Sets = (int)exercise.Sets,
             VideoUrl = exercise.Exercise.VideoUrl,
             Type = exercise.Exercise.Type.Name,
-            MeasurementUnit = exercise.Exercise.Type.Measurement.Name
+            MeasurementUnit = exercise.Exercise.Type.Measurement.Name,
+            SetsDescription = GetExerciseDescription(exercise)
         };
+    }
+
+
+    private string GetExerciseDescription(ExerciseRoutine exercise)
+    {
+        switch (exercise.Exercise.Type.Name.ToLower())
+        {
+            case "time":
+                return $"{exercise.Sets} series de {exercise.Load} {exercise.Exercise.Type.Measurement.Name}";
+
+            case "weight":
+                return $"{exercise.Sets} series de {exercise.Reps} reps con {exercise.Load} {exercise.Exercise.Type.Measurement.Name}";
+
+            default:
+                return string.Empty; // this case will never happen
+        }
     }
 }

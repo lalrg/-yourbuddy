@@ -11,7 +11,6 @@ public interface ITrainingSessionRepository
     Task<bool> UpdateExercises(TrainingSession trainingSession);
 
     Task<TrainingSessionDetailDTO> GetById(Guid Id);
-    Task<List<TrainingSessionDTO>> GetAllForUser(Guid UserId);
     Task<PaginationResultDTO<TrainingSessionDTO>> GetAllPagedForUser(PaginationDTO pagination, Guid UserId);
 
 }

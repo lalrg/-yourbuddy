@@ -17,9 +17,14 @@ const GetExerciseById = async (exerciseId: string) => {
   return await getBase(`${BaseUrl}exercise/${exerciseId}`);
 }
 
+const GetAllExercises = async () => {
+  return await getBase(`${BaseUrl}exercise/getall`)
+}
+
 export {
   GetExercisesList,
   CreateExercise,
   UpdateExercise,
-  GetExerciseById
+  GetExerciseById,
+  GetAllExercises
 }

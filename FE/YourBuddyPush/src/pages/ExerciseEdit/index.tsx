@@ -35,7 +35,6 @@ const ExerciseEdit: React.FC = () => {
               name: r.data.name,
               description: r.data.description,
               imageUrl: r.data.imageUrl || 'no definido',
-              videoUrl: r.data.videoUrl || 'no definido',
               type: r.data.type
             });
           }
@@ -75,10 +74,6 @@ const ExerciseEdit: React.FC = () => {
         </Form.Item>
 
         <Form.Item label="URL de la imagen" name="imageUrl" rules={[{ required: true, message: 'Este campo es requerido' }]}>
-          <Input />
-        </Form.Item>
-
-        <Form.Item label="URL del video" name="videoUrl" rules={[{ required: true, message: 'Este campo es requerido' }]}>
           <Input />
         </Form.Item>
 

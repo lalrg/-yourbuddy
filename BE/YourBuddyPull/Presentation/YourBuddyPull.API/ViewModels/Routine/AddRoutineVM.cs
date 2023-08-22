@@ -6,8 +6,5 @@ namespace YourBuddyPull.API.ViewModels.Routine
     {
         [Required]
         public string Name { get; set; }
-        [Required]
-        public Guid CreatedById { get; set; }
-        public string createdByName { get; set; }
     }
 }

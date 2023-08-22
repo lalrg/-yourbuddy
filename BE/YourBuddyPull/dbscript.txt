@@ -165,3 +165,54 @@ VALUES
     (NEWID(), 2, 'Zancadas', 'Ejercicio para tonificar piernas y glúteos.', '', ''),
     (NEWID(), 1, 'Dominadas', 'Ejercicio para fortalecer la espalda y bíceps.', '', ''),
     (NEWID(), 2, 'Mountain Climbers', 'Ejercicio para trabajar el core y cardiovascular.', '', '');
+
+
+-- Get the UserId for the created user
+DECLARE @UserId UNIQUEIDENTIFIER = (SELECT [Id] FROM [User] WHERE [Email] = 'lalrg@outlook.com');
+
+-- Seed insert for Routine table for Routine A
+INSERT INTO [Routine] ([Id], [UserAssignedId], [CreatedBy], [IsEnabled], [Name])
+VALUES (NEWID(), @UserId, @UserId, 1, 'Rutina de Entrenamiento A');
+
+-- Get the generated RoutineId for Routine A
+DECLARE @RoutineIdA UNIQUEIDENTIFIER = (select top 1 Id from Routine)
+
+-- Seed insert for ExerciseRoutine table for Routine A
+INSERT INTO [ExerciseRoutine] ([RoutineId], [ExerciseId], [Load], [Sets], [Reps])
+VALUES
+    (@RoutineIdA, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Levantamiento de Pesas'), 50, 3, 12),
+    (@RoutineIdA, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Flexiones'), 0, 3, 15),
+    (@RoutineIdA, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Plancha'), 0, 3, 45);
+
+
+-- Seed insert for Routine table for Routine B
+INSERT INTO [Routine] ([Id], [UserAssignedId], [CreatedBy], [IsEnabled], [Name])
+VALUES (NEWID(), @UserId, @UserId, 1, 'Rutina de Entrenamiento B');
+
+-- Get the generated RoutineId for Routine B
+DECLARE @RoutineIdB UNIQUEIDENTIFIER =  (select top 1 Id from Routine where id!= @RoutineIdA);
+
+-- Seed insert for ExerciseRoutine table for Routine B
+INSERT INTO [ExerciseRoutine] ([RoutineId], [ExerciseId], [Load], [Sets], [Reps])
+VALUES
+    (@RoutineIdB, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Sentadillas'), 30, 4, 10),
+    (@RoutineIdB, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Press de Banca'), 40, 4, 8),
+    (@RoutineIdB, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Abdominales'), 0, 3, 20);
+
+
+-- Get the UserId for the created user
+DECLARE @UserId UNIQUEIDENTIFIER = (SELECT [Id] FROM [User] WHERE [Email] = 'lalrg@outlook.com');
+
+-- Seed insert for Session table
+INSERT INTO [Session] ([Id], [CreatedBy], [StartTime], [EndTime])
+VALUES (NEWID(), @UserId, '2023-06-01 08:00:00', '2023-06-01 09:30:00');
+
+-- Get the generated SessionId
+DECLARE @SessionId UNIQUEIDENTIFIER = (select top 1 id from session)
+
+-- Seed insert for SessionExercise table
+INSERT INTO [SessionExercise] ([SessionId], [ExerciseId], [Reps], [Sets], [Load])
+VALUES
+    (@SessionId, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Levantamiento de Pesas'), 12, 3, 50),
+    (@SessionId, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Flexiones'), 15, 3, 0),
+    (@SessionId, (SELECT [Id] FROM [Exercise] WHERE [Name] = 'Plancha'), 45, 3, 0);

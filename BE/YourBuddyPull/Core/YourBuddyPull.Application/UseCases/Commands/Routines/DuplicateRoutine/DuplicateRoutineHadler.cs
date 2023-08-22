@@ -35,8 +35,9 @@ public class DuplicateRoutineHadler : IRequestHandler<DuplicateRoutineCommand, G
         _unitOfWork.OpenTransaction();
         
         await _routineRepository.Create(newRoutine);
+        await _unitOfWork.CommitTransaction();
 
-        if(existingRoutineDomain.AssignedTo != Guid.Empty) {
+        if (existingRoutineDomain.AssignedTo != Guid.Empty) {
             var assignedTo = await _userRepository.GetUserPropertiesByGuid(existingRoutineDomain.AssignedTo);
             newRoutine.AssignToUser(assignedTo.Id);
             await _routineRepository.AssignToUser(newRoutine);

@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using System.Linq;
+using XAct;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Domain.Routines;
 using YourBuddyPull.Domain.Shared.ValueObjects;
@@ -20,14 +22,23 @@ public class AddExerciseToRoutineHandler : IRequestHandler<AddExerciseToRoutineC
     {
         var persistenceRoutine = await _routineRepository.GetRoutinePropertiesByGuid(request.RoutineId);
         var domainRoutine = Routine.Instanciate(
-            persistenceRoutine.Id, 
-            persistenceRoutine.CreatedByName, 
+            persistenceRoutine.Id,
+            persistenceRoutine.CreatedByName,
             CreatedBy.Instanciate(persistenceRoutine.CreatedBy, persistenceRoutine.CreatedByName),
-            persistenceRoutine.isEnabled);
+            persistenceRoutine.isEnabled,
+            persistenceRoutine.Exercises.Select(e => PlannedExercise.Instanciate(
+                    e.ExerciseId,
+                    e.Name,
+                    e.Reps,
+                    e.Sets,
+                    e.Load,
+                    new ExerciseType(MapExerciseType(e.Type))
+            )).ToList());
         
         var persistenceExercise = await _exerciseRepository.GetExerciseInformationById(request.ExerciseId);
 
-        var domainExercise = PlannedExercise.Create(
+        var domainExercise = PlannedExercise.Instanciate(
+            persistenceExercise.ExerciseId,
             persistenceExercise.Name, 
             request.reps, 
             request.sets, 
@@ -37,7 +48,6 @@ public class AddExerciseToRoutineHandler : IRequestHandler<AddExerciseToRoutineC
         domainRoutine.AddExercise(domainExercise);
         _unitOfWork.OpenTransaction();
         var result = await _routineRepository.UpdateExercisesForRoutine(domainRoutine);
-        await _unitOfWork.CommitTransaction();
 
         return result;
     }

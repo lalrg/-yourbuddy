@@ -51,19 +51,13 @@ const SideMenu: React.FC = () => {
     },
     {
       icon: FireOutlined,
-      text: 'Todas las Sesiones',
-      onClick: ()=> navigate('/sessions'),
-      role: 'admin'
-    },
-    {
-      icon: FireOutlined,
       text: 'Mis Sesiones',
       onClick: ()=> navigate('/mysessions'),
       role: 'user'
     },
     {
       icon: SettingOutlined,
-      text: 'Ajustes',
+      text: 'Actualizar contraseña',
       onClick: ()=> navigate('/settings'),
       role: 'user'
     },
