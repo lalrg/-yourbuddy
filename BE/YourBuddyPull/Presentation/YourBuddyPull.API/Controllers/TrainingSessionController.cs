@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using YourBuddyPull.API.ViewModels.Common;
 using YourBuddyPull.API.ViewModels.TrainingSession;
+using YourBuddyPull.Application.UseCases.Commands.Exercises.RemoveExercise;
+using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.AddExerciseToTrainingSession;
 using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.AddTrainingSession;
+using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.RemoveExerciseFromTrainingSession;
 using YourBuddyPull.Application.UseCases.Commands.TrainingSessions.UpdateTrainingSession;
+using YourBuddyPull.Application.UseCases.Queries.TrainingSessions.GetSingleTrainingSession;
 using YourBuddyPull.Application.UseCases.Queries.TrainingSessions.GetTrainingSessionsForUser;
 
 namespace YourBuddyPull.API.Controllers
@@ -19,26 +23,6 @@ namespace YourBuddyPull.API.Controllers
         public TrainingSessionController(IMediator mediator)
         {
             _mediator = mediator;
-        }
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Get([FromQuery]PaginationInfo pagination)
-        {
-            if (pagination.CurrentPage < 1)
-                pagination.CurrentPage = 1;
-            if (pagination.PageSize < 5)
-                pagination.PageSize = 5;
-
-            var result = await _mediator.Send(
-                    new GetTrainingSessionsForUserQuery()
-                    {
-                        CurrentPage = pagination.CurrentPage,
-                        PageSize = pagination.PageSize,
-                        UserId = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value)
-                    }
-                );
-
-            return Ok(result);
         }
 
         [HttpPost]
@@ -65,9 +49,9 @@ namespace YourBuddyPull.API.Controllers
             return Ok("Sesion creada correctamente");
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetByUserId(Guid id, [FromQuery] PaginationInfo pagination)
+        public async Task<IActionResult> Get([FromQuery] PaginationInfo pagination)
         {
             if (pagination.CurrentPage < 1)
                 pagination.CurrentPage = 1;
@@ -77,12 +61,25 @@ namespace YourBuddyPull.API.Controllers
             var result = await _mediator.Send(
                     new GetTrainingSessionsForUserQuery()
                     {
-                        CurrentPage= pagination.CurrentPage,
+                        CurrentPage = pagination.CurrentPage,
                         PageSize = pagination.PageSize,
-                        UserId = id
+                        UserId = Guid.Parse(User.Claims.First(u => u.Type == ClaimTypes.NameIdentifier).Value)
                     }
                 );
-            return Ok();
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var result = await _mediator.Send(
+                new GetSingleTrainingSessionQuery()
+                {
+                    TrainingSessionId = id
+                });
+
+            return Ok(result);
         }
 
         [HttpPut]
@@ -92,21 +89,57 @@ namespace YourBuddyPull.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Datos invalidos");
 
-            var mappedExercises = vm.exercises.Select(x => new Application.UseCases.Commands.TrainingSessions.UpdateTrainingSession.UpdatedExercise()
-            {
-                exerciseId = x.exerciseId,
-                load = x.load,
-                reps = x.reps,
-                sets = x.sets,
-            }).ToList();
-
             var result = await _mediator.Send(
                     new UpdateTrainingSessionCommand()
                     {
                         endTime = vm.endTime,
-                        exercises = mappedExercises,
                         SessionId = vm.SessionId,
                         startTime = vm.startTime
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+
+            return Ok("Sesion actualizada correctamente");
+        }
+
+        [HttpPost("addExercise")]
+        [Authorize]
+        public async Task<IActionResult> AddExercise(AddExerciseVM vm)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Datos invalidos");
+
+            var result = await _mediator.Send(
+                    new AddExerciseToTrainingSessionCommand()
+                    {
+                        exerciseId = vm.exerciseId,
+                        load = vm.load,
+                        reps = vm.reps,
+                        sessionId = vm.sessionId,
+                        sets = vm.sets                        
+                    }
+                );
+
+            if (!result)
+                return BadRequest("Ha ocurrido un error");
+
+            return Ok("Sesion actualizada correctamente");
+        }
+
+        [HttpPost("removeExercise")]
+        [Authorize]
+        public async Task<IActionResult> removeExercise(RemoveExerciseVM vm)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Datos invalidos");
+
+            var result = await _mediator.Send(
+                    new RemoveExerciseFromTrainingSessionCommand()
+                    {
+                        sessionId = vm.sessionId,
+                        exerciseId = vm.exerciseId
                     }
                 );
 

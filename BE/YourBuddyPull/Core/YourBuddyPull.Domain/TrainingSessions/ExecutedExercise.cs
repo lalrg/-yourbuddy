@@ -13,9 +13,9 @@ public sealed class ExecutedExercise
         ExerciseType = exerciseType;
         ExerciseName = exerciseName;
     }
-    public static ExecutedExercise Instanciate(string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
+    public static ExecutedExercise Instanciate(Guid id, string exerciseName, int reps, int sets, int load, ExerciseType exerciseType)
     {
-        return new ExecutedExercise(Guid.NewGuid(), exerciseName,reps, sets, load, exerciseType);
+        return new ExecutedExercise(id, exerciseName,reps, sets, load, exerciseType);
     }
     public Guid ExerciseId { get => _exerciseId; set { 
             if(value == Guid.Empty)
@@ -34,15 +34,11 @@ public sealed class ExecutedExercise
     public int Reps { get; set; }
     public int Sets { get => _sets; set
         {
-            if (value < 1)
-                throw new DomainValidationException("The sets must be more than 0");
             _sets = value;
         } 
     }
     private int _sets { get; set; } = 0;
     public int Load { get => _load; set {
-            if (value < 1)
-                throw new DomainValidationException("The value must be more than 0");
             _load = value;
         }
     }

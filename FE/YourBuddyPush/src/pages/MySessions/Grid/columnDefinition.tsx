@@ -6,7 +6,7 @@ import { trainingSessionInformation } from "../../../shared/types/trainingSessio
 const SessionActions = (session: trainingSessionInformation) => {
   return(
     <Space key={session.id}>
-      <Link to={`/sessions/${session.id}`}>Ver o actualizar</Link>
+      <Link to={`/mysessions/${session.id}`}>Ver o actualizar</Link>
     </Space>
   )
 }

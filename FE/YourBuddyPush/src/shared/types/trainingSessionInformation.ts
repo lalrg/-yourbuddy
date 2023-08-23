@@ -4,7 +4,7 @@ export type trainingSessionInformation = {
   endTime: Date;
   createdById: string;
   createdByName: string;
-  exerciseTrainingSessions: exerciseTrainingSession;
+  exercises: Array<exerciseTrainingSession>;
 }
 
 export type exerciseTrainingSession = {

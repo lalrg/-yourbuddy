@@ -4,8 +4,6 @@ import NoData from '../../components/NoData';
 import { Button, Row, Spin } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { GetRoutinesList } from '../../serverCalls/routines';
-import { useAuthStore } from '../../store/authStore';
 import { GetSessionsList } from '../../serverCalls/sessions';
 import { trainingSessionInformation } from '../../shared/types/trainingSessionInformation';
 
@@ -13,20 +11,17 @@ const MySessions: React.FC = ()=> {
   const [pagination, setPagination] = useState({ pageSize: 5, currentPage: 1, totalItems: 0, });
   const [sessionData, setSessionData] = useState<Array<trainingSessionInformation>>();
   const [isLoading, setIsLoading] = useState(true);
-  const [hasChanged, setHasChanged] = useState(false);
-  const { userInfo } = useAuthStore();
   const navigate = useNavigate();
   
   useEffect(() => {
     setIsLoading(true);
-    GetSessionsList(5, 1);
 
     GetSessionsList(pagination.pageSize, pagination.currentPage)
       .then(
         r => {
           setSessionData( 
             r.data.items?.map(
-              (i: trainingSessionInformation) => ({ ...i, actionsAllowed: userInfo?.roles })
+              (i: trainingSessionInformation) => ({ ...i})
             )
           );
 
@@ -41,8 +36,7 @@ const MySessions: React.FC = ()=> {
       ).finally(
         () => setIsLoading(false)
       );
-      setHasChanged(false);
-  }, [pagination.pageSize, pagination.currentPage, setSessionData, setPagination, hasChanged, setHasChanged, userInfo?.roles])
+  }, [pagination.pageSize, pagination.currentPage, setSessionData, setPagination])
 
   const onPaginationChange = (currentPage: number, itemsPerPage: number) => {
     setPagination(

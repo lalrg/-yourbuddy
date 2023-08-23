@@ -15,6 +15,7 @@ import RoutineViewEdit from './pages/RoutineViewEdit';
 import ForgotPasswordComponent from './pages/ForgotPassword';
 import UpdatePassword from './pages/UpdatePassword';
 import MySessions from './pages/MySessions';
+import SessionViewEdit from './pages/SessionViewEdit';
 
 const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
@@ -70,6 +71,11 @@ const AppRoutes: Array<{path: string, element: React.FC, role: string}> = [
   {
     element: () => <MySessions />,
     path: '/mysessions',
+    role: 'user'
+  },
+  {
+    element: () => <SessionViewEdit />,
+    path: '/mysessions/:id',
     role: 'user'
   },
   {

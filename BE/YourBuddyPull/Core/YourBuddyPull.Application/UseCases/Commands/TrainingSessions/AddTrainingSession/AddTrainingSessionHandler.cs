@@ -20,7 +20,7 @@ public class AddTrainingSessionHandler : IRequestHandler<AddTrainingSessionComma
     public async Task<bool> Handle(AddTrainingSessionCommand request, CancellationToken cancellationToken)
     {
         var domainCreatedBy = CreatedBy.Instanciate(request.CreatedBy, request.CreatedByName);
-        var domainTrainingSession = TrainingSession.Create(domainCreatedBy, request.startTime, request.endTime);
+        var domainTrainingSession = TrainingSession.Create(domainCreatedBy, request.startTime, request.endTime, new());
 
         _unitOfWork.OpenTransaction();
         var result = await _trainingSessionRepository.Create(domainTrainingSession);
@@ -31,7 +31,7 @@ public class AddTrainingSessionHandler : IRequestHandler<AddTrainingSessionComma
             {
                 domainTrainingSession.AddExercise(
                     ExecutedExercise.Instanciate(
-                        e.Name, 1, 1, 1, new ExerciseType(MapExerciseType(e.Type))
+                        e.ExerciseId, e.Name, 1, 1, 1, new ExerciseType(MapExerciseType(e.Type))
                     )
                 );
             });

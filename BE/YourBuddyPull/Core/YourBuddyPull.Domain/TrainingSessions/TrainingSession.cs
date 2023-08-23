@@ -6,28 +6,29 @@ namespace YourBuddyPull.Domain.TrainingSessions;
 
 public sealed class TrainingSession : BaseEntity
 {
-    private TrainingSession(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    private TrainingSession(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime, List<ExecutedExercise> exercises)
     {
         Id = id;
         CreatedBy = createdBy;
         StartTime = startTime;
         EndTime = endTime;
+        _executedExercise = exercises;
     }
 
-    public static TrainingSession Create(CreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    public static TrainingSession Create(CreatedBy createdBy, DateTime startTime, DateTime? endTime, List<ExecutedExercise> exercises)
     {
         if (startTime > endTime && endTime is not null)
             throw new DomainValidationException("End time cannot happen before start time");
 
-        return new TrainingSession(Guid.NewGuid(), createdBy, startTime, endTime);
+        return new TrainingSession(Guid.NewGuid(), createdBy, startTime, endTime, exercises);
     }
 
-    public static TrainingSession Instanciate(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime)
+    public static TrainingSession Instanciate(Guid id, CreatedBy createdBy, DateTime startTime, DateTime? endTime, List<ExecutedExercise> exercises)
     {
         if (startTime > endTime && endTime is not null)
             throw new DomainValidationException("End time cannot happen before start time");
 
-        return new TrainingSession(id, createdBy, startTime, endTime);
+        return new TrainingSession(id, createdBy, startTime, endTime, exercises);
     }
 
     public void UpdateProperties(DateTime startTime, DateTime? endTime)

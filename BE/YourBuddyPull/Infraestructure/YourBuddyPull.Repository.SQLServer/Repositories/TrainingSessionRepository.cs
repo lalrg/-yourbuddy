@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data;
+using XAct;
 using YourBuddyPull.Application.Contracts.Data;
 using YourBuddyPull.Application.DTOs.Shared;
 using YourBuddyPull.Application.DTOs.TrainingSession;
@@ -66,7 +68,15 @@ public class TrainingSessionRepository : ITrainingSessionRepository
 
     public async Task<TrainingSessionDetailDTO> GetById(Guid Id)
     {
-        var persistenceSession = await _context.Sessions.SingleAsync(x => x.Id == Id);
+        var persistenceSession = await _context
+            .Sessions
+            .Include(x=>x.CreatedByNavigation)
+            .Include(x=>x.SessionExercises)
+            .ThenInclude(x=>x.Exercise)
+            .ThenInclude(x => x.Type)
+            .ThenInclude(x => x.Measurement)
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == Id);
         return new()
         {
             Id = persistenceSession.Id,
@@ -89,32 +99,42 @@ public class TrainingSessionRepository : ITrainingSessionRepository
 
     }
 
-    public Task<bool> UpdateExercises(TrainingSession trainingSession)
+    public async Task<bool> UpdateExercises(TrainingSession trainingSession)
     {
-        // sessionexercises
-        var mappedExercises = trainingSession.ExecutedExercise.Select(
-            e => new SessionExercise()
-            {
-                ExerciseId = e.ExerciseId,
-                Load = e.Load,
-                Reps = e.Reps,
-                SessionId = trainingSession.Id,
-                Sets = e.Sets
-            }
-            ).ToList();
+        var exerciseIds = trainingSession.ExecutedExercise.Select(x => x.ExerciseId).ToList();
+        var elementsToRemove = await _context.SessionExercises
+                    .Where(se =>
+                        se.SessionId == trainingSession.Id &&
+                        !exerciseIds.Contains(se.ExerciseId))
+                .ToListAsync();
 
-        Session persistenceTrainingSession = new()
-        {
-            CreatedBy = trainingSession.CreatedBy.CreatedById,
-            EndTime = trainingSession.EndTime,
-            StartTime = trainingSession.StartTime,
-            Id = trainingSession.Id,
-            SessionExercises = mappedExercises
-        };
+        _context.SessionExercises.RemoveRange(elementsToRemove);
 
-        _context.Entry(persistenceTrainingSession).State = EntityState.Modified;
+        var exercisessToAdd = new List<SessionExercise>();
+        trainingSession.ExecutedExercise.ForEach(
+            ee => {
+                if(!_context
+                    .SessionExercises
+                    .Any(se => ee.ExerciseId == se.ExerciseId && se.SessionId == trainingSession.Id))
+                {
+                    exercisessToAdd.Add(
+                        new()
+                        {
+                            ExerciseId= ee.ExerciseId,
+                            Load = ee.Load,
+                            Reps = ee.Reps,
+                            SessionId = trainingSession.Id,
+                            Sets = ee.Sets
+                        }
+                        );
+                }
+                }
+            );
 
-        return Task.FromResult(true);
+        _context.SessionExercises.AddRange(exercisessToAdd );
+
+
+        return true;
     }
 
     private static List<ExerciseTrainingSessionInformationDTO> MapSessionExercisesToDTO(List<SessionExercise> sessionExercises)
